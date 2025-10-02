@@ -5,3 +5,4 @@ pandas
 delta-sharing
 pytest
 pycryptodome
+google-cloud-storage
