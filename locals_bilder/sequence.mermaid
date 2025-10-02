@@ -7,9 +7,7 @@ sequenceDiagram
     Consumer->>+GCP: authenticate using workload identity provider
     GCP-->>-Consumer: successful impersonation
     Consumer->>+GCP: download file from bucket
-    GCP-->>-Consumer: .authentication_link
-    Consumer->>+Databricks: download from authentication_link
-    Databricks-->>-Consumer: file config.share
+    CGP-->>-Consumer: file config.share
     loop DeltaShareProtocol using config.share
         Consumer->>+Databricks: Shortlived accesstokens
         Databricks->>-Consumer: Data
