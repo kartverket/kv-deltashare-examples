@@ -1,0 +1,16 @@
+%% Install the mermaid pluging or use the live editor at https://mermaid.live
+sequenceDiagram
+    autonumber
+    Consumer->>+Consumer: Create signed JWT grant
+    Consumer->>+Maskinporten: signed JWT grant
+    Maskinporten-->>-Consumer: .access_token
+    Consumer->>+GCP: authenticate using workload identity provider
+    GCP-->>-Consumer: successful impersonation
+    Consumer->>+GCP: download file from bucket
+    GCP-->>-Consumer: .authentication_link
+    Consumer->>+Databricks: download from authentication_link
+    Databricks-->>-Consumer: file config.share
+    loop DeltaShareProtocol using config.share
+        Consumer->>+Databricks: Shortlived accesstokens
+        Databricks->>-Consumer: Data
+    end

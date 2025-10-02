@@ -1,0 +1,7 @@
+requests
+uuid
+jwcrypto
+pandas
+delta-sharing
+pytest
+pycryptodome

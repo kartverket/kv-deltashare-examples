@@ -1,0 +1,63 @@
+erDiagram
+
+%% Fact Table
+    fact_registerenhetsretssandel ||--|| dim_person : zk_rettighetshaver_id
+    fact_registerenhetsretssandel ||--|| dim_registerenhet : zk_realkobletTil_id
+    fact_registerenhetsretssandel ||--|| dim_registerenhetsrett : zk_registerenhetsrett_id
+
+%% Dimension Relationships
+    dim_registerenhet ||--|| dim_borettslag : zk_borettslag_id
+    dim_registerenhet ||--|| dim_kommune : zk_kommune_id
+    dim_borettslag ||--|| dim_person : zk_organisasjon_id
+    dim_registerenhetsrett ||--|| dim_registerenhet : zk_registerenhet_id
+
+%% Fact Table Definition
+    fact_registerenhetsretssandel {
+        bigint id PK
+        bigint zk_rettighetshaver_id FK "FK to dim_person"
+        int zk_realkobletTil_id FK "FK to dim_registerenhet"
+        int zk_registerenhetsrett_id FK "FK to dim_registerenhetsrett"
+        int teller "Numerator of the share"
+        int nevner "Denominator of the share"
+        int lopenummer "Serial number"
+        boolean historisk "Historical flag"
+    }
+
+%% Dimension Table Definitions
+    dim_person {
+        int id PK
+        boolean historisk "Historical flag"
+        string identifikasjonsnummer "Identification number"
+        string identifikasjonsnummertype "e.g., fodselsnummer"
+    }
+
+    dim_registerenhet {
+        int id PK
+        boolean utgaatt "Expired flag"
+        int gaardsnummer "Farm number"
+        int bruksnummer "Usage number"
+        int festenummer "Lease number"
+        int seksjonsnummer "Section number"
+        int andelsnummer "Share number"
+        int zk_borettslag_id FK "FK to dim_borettslag (nullable)"
+        int zk_kommune_id FK "FK to dim_kommune"
+    }
+
+    dim_registerenhetsrett {
+        int id PK
+        int zk_registerenhet_id FK "FK to dim_registerenhet"
+        string registerenhetsrettstype "e.g., eiendomsrett"
+    }
+
+    dim_borettslag {
+        int id PK
+        boolean historisk "Historical flag"
+        int zk_organisasjon_id FK "FK to dim_person"
+    }
+
+    dim_kommune {
+        int id PK
+        string kommunenummer "Municipality number"
+        string navn "Municipality name"
+        boolean historisk "Municipality historical flag"
+    }
