@@ -1,3 +1,27 @@
+# Kv-deltashare-examples
+
+Dette er et eksempelrepo for uthenting av data gjennom delta share sikret med Maskinporten for virksomheter invitert til lukket pilottesting.
+
+## Flytdiagram
+
+Tilgang og dataflyt sett fra konsumentsiden:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    Consumer->>+Consumer: Create signed JWT grant
+    Consumer->>+Maskinporten: signed JWT grant
+    Maskinporten-->>-Consumer: .access_token
+    Consumer->>+GCP: authenticate using workload identity provider
+    GCP-->>-Consumer: successful impersonation
+    Consumer->>+GCP: download file from bucket
+    CGP-->>-Consumer: file config.share
+    loop DeltaShareProtocol using config.share
+        Consumer->>+Databricks: Shortlived accesstokens
+        Databricks->>-Consumer: Data
+    end
+```
+
 ## Kom i gang
 
 ### Manuelt førstegangsoppsett for å lage Maskinporten-token
@@ -26,9 +50,6 @@ Plasser privatnøkkelen i:
 ```
 certs/mp-key.pem
 ```
-## Uthenting av data
-
-![Flytskjema](locals_bilder/mermaid-diagram-2025-02-24-113930.svg)
 
 ### Kjør notebook
 
@@ -70,10 +91,6 @@ I credentials.json, referer til:
 - Workload Identity Provider du har rettigheter til (denne oppgir data provider).
 - Service Account som impersonator (denne oppgir data provider).
 
-### Hent og plasser config.share
-
-Følg notebooken og config.share lagres med endepunktet. Nå kan du hente data (share name får du av data-provider). MERK: config.share er bare tilgjengelig for nedlasting en 
-gang pr dag, så dersom det er flere som samarbeider må denne deles dere i mellom.
 
 ## Krypterte persondata
 
@@ -94,22 +111,22 @@ Diagrammet under illustrerer dataene og relasjonene mellom de ulike tabellene.
 3. Her viser vi kun primærnøkler og fremmednøkler, mens øvrige kolonner i hver tabell ikke er skissert opp her. For å hente ut fullstendig beskrivelse av alle kolonnene, kan man benytte funksjonen `get_table_metadata` beskrevet i skyporten-deltashare.ipynb For å å forenkle skissen er ikke kobling mot kommune vist for aktuelle tabeller, men kobles sammen med `zk_kommuneId` for tabellene som har denne kolonnen
 ![Datastruktur for sølvdata ihht. stjernemodellering.](./assets/dataproducts-silver.svg)
 
-### Annet 
+## Annet 
 
-#### Oppdateringsfrekvens
+### Oppdateringsfrekvens
 
 Vi oppdaterer dataene en gang i døgnet pt (oppdateringsvindu = 24 timer). For matrikkeldata er kilden Matrikkelen sin endringslogg.
 
 Dersom det er flere endringer på samme objekt innenfor oppdateringsvinduet, vil vi kun registere den siste endringen for å få korrekt oppdateringstid/endringstidspunkt.
 
 
-#### Versjonering 
+### Versjonering 
 
 Målet er å holde dataproduktene stabile. Breaking changes skal varsles, i starten kan det være litt oftere, men etterhvert som produktene er gjennom utviklingsfasen vil vi varsle i forkant. 
 
 Nye kolonner vil kunne legges til i eksisterende dataprodukter uten varsling og dette må håndteres av nedstrøms konsumenter. Transaksjonsloggen i deltashare skal sørge for at nye kolonner populeres med ny data.
 
-####  FAQ
+###  FAQ
 
 > *dim_adresse* har noen innslag hvor `to_datetime = null`, hvordan skal vi tolke disse resultatene.
 
