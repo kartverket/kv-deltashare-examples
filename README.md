@@ -15,11 +15,12 @@ sequenceDiagram
     Consumer->>+GCP: authenticate using workload identity provider
     GCP-->>-Consumer: successful impersonation
     Consumer->>+GCP: download file from bucket
-    CGP-->>-Consumer: file config.share
+    GCP-->>-Consumer: file config.share
     loop DeltaShareProtocol using config.share
         Consumer->>+Databricks: Shortlived accesstokens
         Databricks->>-Consumer: Data
     end
+
 ```
 
 ## Kom i gang
