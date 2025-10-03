@@ -21,7 +21,7 @@ Dette scriptet kan benyttes dersom ett eller flere av datasettene deres innehold
    crypto/consumer_private_key.pem
    ```
 
-   Se eksempler på hvordan nøkler kan genereres i [kartverket/kv-dataplattform-consumer](https://github.com/kartverket/kv-dataplattform-consumer).
+   Se eksempler på hvordan nøkler kan genereres i [kartverket/kv-dataplattform-consumer](https://github.com/kartverket/kv-dataplattform-consumer](https://github.com/kartverket/kv-dataplattform-consumer/blob/main/python/README.md#generer-en-egen-n%C3%B8kkel)).
 
 2. **Krypterte datafiler**  
    Sørg for at du har:
