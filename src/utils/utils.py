@@ -4,7 +4,6 @@ import json
 import requests
 from datetime import datetime, timezone
 from google.cloud import storage
-# TODO: flytt til nytt repo også!
 from google.auth import identity_pool
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
