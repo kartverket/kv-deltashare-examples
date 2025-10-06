@@ -6,3 +6,4 @@ delta-sharing
 pytest
 pycryptodome
 google-cloud-storage
+google-auth
