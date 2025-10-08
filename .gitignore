@@ -12,4 +12,5 @@ authentication.json
 *.share
 *.pyc
 /__pycache__
+__pycache__
 *.pycskyporten-deltashare.ipynb
