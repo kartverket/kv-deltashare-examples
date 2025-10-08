@@ -4,6 +4,7 @@ import json
 import requests
 from datetime import datetime, timezone
 from google.auth import identity_pool
+from google.cloud import storage
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
