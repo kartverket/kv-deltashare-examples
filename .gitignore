@@ -10,5 +10,6 @@ authentication.json
 .ipynb_checkpoints
 *.pem
 *.share
+*.pyc
 /__pycache__
 *.pycskyporten-deltashare.ipynb

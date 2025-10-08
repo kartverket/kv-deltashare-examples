@@ -6,3 +6,4 @@ delta-sharing
 pytest
 pycryptodome
 google-cloud-storage
+pyspark==3.5.3
