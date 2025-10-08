@@ -5,7 +5,6 @@ from .utils import (
     write_json,
     is_auth_valid,
     is_config_expired,
-    fetch_delta_sharing_config,
 )
 
 __all__ = [
