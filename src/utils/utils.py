@@ -3,6 +3,7 @@ import subprocess
 import json
 import requests
 from datetime import datetime, timezone
+from google.auth import identity_pool
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
@@ -16,7 +17,32 @@ def read_json(file_path):
     except (json.JSONDecodeError, FileNotFoundError) as e:
         print(f"Error reading {file_path}: {e}")
         return None
+    
+def create_credentials_config(provider, TOKEN_FILE, CREDENTIALS_FILE):
+    
+    subprocess.run([
+        "gcloud", "iam", "workload-identity-pools", "create-cred-config",
+        provider, "--credential-source-type=text",
+        f"--credential-source-file={TOKEN_FILE}",
+        f"--output-file={CREDENTIALS_FILE}"
+    ], check=True)
 
+
+
+def fetch_config_share(project_id, bucket_id, SHARE_FILE_PATH, CREDENTIALS_FILE):
+    if is_config_expired(SHARE_FILE_PATH):
+        print("config is expired or missing, downloading a new one...")
+        filename = "config.share"
+ 
+        credentials = identity_pool.Credentials.from_file(CREDENTIALS_FILE)
+        storage_client = storage.Client(project_id, credentials = credentials)
+        bucket = storage_client.bucket(bucket_id)
+
+        blob = bucket.blob(filename)
+        blob.download_to_filename(SHARE_FILE_PATH)
+        print("Downloaded storage object {} from bucket {} to local file {}.".format( bucket_id, filename, SHARE_FILE_PATH))
+    else:
+        print("config.share er gyldig")
 
 def write_json(file_path, data):
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
