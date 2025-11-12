@@ -1,63 +1,107 @@
 erDiagram
 
 %% Fact Table
-    fact_registerenhetsretssandel ||--|| dim_person : zk_rettighetshaver_id
-    fact_registerenhetsretssandel ||--|| dim_registerenhet : zk_realkobletTil_id
-    fact_registerenhetsretssandel ||--|| dim_registerenhetsrett : zk_registerenhetsrett_id
+    fact_registerenhetsrettsandel_encrypted ||--|| dim_registerenhetsrettsandel_encrypted : registerenhetsrettsandelId
+    fact_registerenhetsrettsandel_encrypted }o--|| dim_fysisk_person_encrypted : zk_rettighetshaver_personId
+    fact_registerenhetsrettsandel_encrypted }o--|| dim_juridisk_person : zk_rettighetshaver_personId
+    fact_registerenhetsrettsandel_encrypted }|--|| dim_registerenhet : zk_realkobletTil_registerenhetId
+    fact_registerenhetsrettsandel_encrypted }|--|| dim_registerenhetsrett : zk_registerenhetsrettId
+
+    fact_registerenhet ||--|| dim_registerenhet : registerenhetId
+    fact_registerenhet }|--|| dim_borettslag : zk_borettslag_id
+    fact_registerenhet }|--|| dim_kommune : zk_kommuneId
 
 %% Dimension Relationships
-    dim_registerenhet ||--|| dim_borettslag : zk_borettslag_id
-    dim_registerenhet ||--|| dim_kommune : zk_kommune_id
-    dim_borettslag ||--|| dim_person : zk_organisasjon_id
-    dim_registerenhetsrett ||--|| dim_registerenhet : zk_registerenhet_id
+    dim_borettslag }o--o| dim_juridisk_person : zk_personId
+    dim_borettslag }o--o| dim_fysisk_person_encrypted : zk_personId
+    dim_registerenhetsrett ||--|| dim_registerenhet : zk_registerenhetId
 
 %% Fact Table Definition
-    fact_registerenhetsretssandel {
-        bigint id PK
-        bigint zk_rettighetshaver_id FK "FK to dim_person"
-        int zk_realkobletTil_id FK "FK to dim_registerenhet"
-        int zk_registerenhetsrett_id FK "FK to dim_registerenhetsrett"
+    fact_registerenhetsrettsandel_encrypted {
+        int registerenhetsrettsandelId PK
+
+        int zk_registerenhetsrettId FK "FK to dim_registerenhetsrett"
+        int zk_rettighetshaver_personId FK "FK to dim_juridisk_person / dim_fysisk_person_encrypted"
+        int zk_realkobletTil_registerenhetId FK "FK to dim_registerenhet"
+        
         int teller "Numerator of the share"
         int nevner "Denominator of the share"
+    }
+
+    fact_registerenhet {
+        int registerenhetId PK
+
+        int zk_kommuneId FK "FK to dim_kommune"
+        int zk_borettslagId FK "FK to dim_borettslag (nullable)"
+        int zk_adresseId FK "FK to dim_adresse_encrypted"
+        int zk_omnummererttil_registerenhetId FK "FK to fact_registerenhet (self-referencing)"
+    }
+
+%% Dimension Table Definitions
+    dim_registerenhetsrettsandel_encrypted {
+        int registerenhetsrettsandelId PK
+
         int lopenummer "Serial number"
         boolean historisk "Historical flag"
     }
 
-%% Dimension Table Definitions
-    dim_person {
-        int id PK
-        boolean historisk "Historical flag"
-        string identifikasjonsnummer "Identification number"
-        string identifikasjonsnummertype "e.g., fodselsnummer"
-    }
-
     dim_registerenhet {
-        int id PK
+        int registerenhetId PK
+
+        string registerenhetKategori "Class"
         boolean utgaatt "Expired flag"
+
         int gaardsnummer "Farm number"
         int bruksnummer "Usage number"
         int festenummer "Lease number"
         int seksjonsnummer "Section number"
         int andelsnummer "Share number"
-        int zk_borettslag_id FK "FK to dim_borettslag (nullable)"
-        int zk_kommune_id FK "FK to dim_kommune"
+        boolean tinglyst
+        boolean beregneterseksjonert
+        boolean beregnetharaktivefestegrunner
+        boolean jordsameie
     }
 
     dim_registerenhetsrett {
-        int id PK
-        int zk_registerenhet_id FK "FK to dim_registerenhet"
-        string registerenhetsrettstype "e.g., eiendomsrett"
+        int registerenhetsrettId PK
+
+        int zk_registerenhetId FK "FK to fact_registerenhet"
+        int zk_registerenhetsrettstypeKodeId "FK to dim_registerenhetsrettstypekode"
     }
 
     dim_borettslag {
-        int id PK
+        int borettslagId PK
+        int zk_personId FK "FK to dim_juridisk_person / dim_fysisk_person_encrypted"
+
         boolean historisk "Historical flag"
-        int zk_organisasjon_id FK "FK to dim_person"
     }
 
     dim_kommune {
-        int id PK
+        int kommuneId PK
+
         string kommunenummer "Municipality number"
         string navn "Municipality name"
         boolean historisk "Municipality historical flag"
+    }
+
+        dim_fysisk_person_encrypted {
+        int fysiskPersonId PK
+
+        int zk_identifikasjonsnummerTypeKodeId FK
+        string identifikasjonsnummer "Identification number"
+        string navn
+
+        boolean historisk "Historical flag"
+        timestamp oppdateringsdato "Date updated"
+    }
+
+    dim_juridisk_person {
+        int juridiskPersonId PK
+
+        int zk_identifikasjonsnummerTypeKodeId FK
+        string identifikasjonsnummer "Identification number"
+        string navn
+        
+        boolean historisk "Historical flag"
+        timestamp oppdateringsdato "Date updated"
     }

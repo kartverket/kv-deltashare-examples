@@ -4,7 +4,7 @@
 
 Dimensjonstabeller er implementert med Slowly Changing Dimensions type 2 (SCD2)-historikk. Det innebærer at hver rad har et gyldighetsintervall angitt ved _from_datetime_ og _to_datetime_. Tidligste mulige _from_datetime_ er 2017-04-13.
 
-Kolonner med prefiks zk\_ angir fremmednøkler. For eksempel er _zk_kommuneId_ fremmednøkkel til tabell _dim_kommune_ og kan joines på primærnøkkel _kommuneId_. Kolonner med prefiks zx\_ angir interne systemkolonner.
+Kolonner med prefiks zk\_ angir fremmednøkler. For eksempel er _zk_kommuneId_ fremmednøkkel til tabell _dim_kommune_ og kan joines på dens primærnøkkel _kommuneId_. Kolonner med prefiks zx\_ angir interne systemkolonner.
 
 Boolske verdier er oppgitt som et tall, 0 eller 1. De tolkes 0 = False, 1 = True.
 
@@ -27,30 +27,30 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 ### Dimension Tables
 
 - [dim_adresse_encrypted](#dim_adresse_encrypted)
-- [dim_aarsaksgebyrfritakkoder](#dim_aarsaksgebyrfritakkoder)
-- [dim_aarsaksparagrafkoder](#dim_aarsaksparagrafkoder)
-- [dim_anketypekoder](#dim_anketypekoder)
-- [dim_boligtypekoder](#dim_boligtypekoder)
+- [dim_aarsaksgebyrfritakkode](#dim_aarsaksgebyrfritakkode)
+- [dim_aarsaksparagrafkode](#dim_aarsaksparagrafkode)
+- [dim_anketypekode](#dim_anketypekode)
+- [dim_boligtypekode](#dim_boligtypekode)
 - [dim_borettslag](#dim_borettslag)
-- [dim_brukstypekoder](#dim_brukstypekoder)
+- [dim_brukstypekode](#dim_brukstypekode)
 - [dim_dokument](#dim_dokument)
-- [dim_dokumentstatuskoder](#dim_dokumentstatuskoder)
-- [dim_dokavgiftsaarsakkoder](#dim_dokavgiftsaarsakkoder)
+- [dim_dokumentstatuskode](#dim_dokumentstatuskode)
+- [dim_dokavgiftsaarsakkode](#dim_dokavgiftsaarsakkode)
 - [dim_embetekode](#dim_embetekode)
 - [dim_fysisk_person_encrypted](#dim_fysisk_person_encrypted)
-- [dim_identifikasjonsnummertypekoder](#dim_identifikasjonsnummertypekoder)
+- [dim_identifikasjonsnummertypekode](#dim_identifikasjonsnummertypekode)
 - [dim_juridisk_person](#dim_juridisk_person)
 - [dim_kommune](#dim_kommune)
 - [dim_omsetning_encrypted](#dim_omsetning_encrypted)
-- [dim_omsetningstypekoder](#dim_omsetningstypekoder)
+- [dim_omsetningstypekode](#dim_omsetningstypekode)
 - [dim_omsattregisterenhetsrett_encrypted](#dim_omsattregisterenhetsrett_encrypted)
 - [dim_overfoering_omfatter_encrypted](#dim_overfoering_omfatter_encrypted)
 - [dim_periodekode](#dim_periodekode)
 - [dim_registerenhet](#dim_registerenhet)
 - [dim_registerenhetsrett](#dim_registerenhetsrett)
 - [dim_registerenhetsrettsandel_encrypted](#dim_registerenhetsrettsandel_encrypted)
-- [dim_registerenhetsrettstypekoder](#dim_registerenhetsrettstypekoder)
-- [dim_registerenhettypekoder](#dim_registerenhettypekoder)
+- [dim_registerenhetsrettstypekode](#dim_registerenhetsrettstypekode)
+- [dim_registerenhettypekode](#dim_registerenhettypekode)
 - [dim_rettsstiftelse](#dim_rettsstiftelse)
 - [dim_saksinformasjon_encrypted](#dim_saksinformasjon_encrypted)
 - [dim_saksperson_encrypted](#dim_saksperson_encrypted)
@@ -77,27 +77,29 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 
 **Description:**
 
-Tabellen inneholder alle adresser lagret i Grunnboken. Tabellen inkluderer kategoriene UtenlandskAdresse, Vegadresse, Matrikkeladresser og KonvertertAdresse. Vegadresser og Matrikkeladresser har kilde i matrikkelen og kan knyttes til dim_adresse fra matrikkelen med zk_matrikkel_adresseId, zk_matrikkel_bruksenhetId eller kommunenummer, gaardsnummer, bruksnummer, festenummer og/eller undernummer.
+Tabellen inneholder alle adresser lagret i Grunnboken. Tabellen inkluderer kategoriene UtenlandskAdresse, Vegadresse, Matrikkeladresser og KonvertertAdresse.
+
+Vegadresser og Matrikkeladresser har kilde i matrikkelen. Disse kan knyttes til dim_adresse fra matrikkelen med zk_matrikkel_adresseId, til fact_bruksenheter med zk_matrikkel_bruksenhetId eller til dim_matrikkelenhet med kommunenummer, gaardsnummer, bruksnummer, festenummer og/eller undernummer.
 
 **Schema:**
 
-| Column                    | Type      | Comment                                    |
-| ------------------------- | --------- | ------------------------------------------ |
-| adresseId                 | bigint    | Primærnøkkel                               |
-| zk_matrikkel_adresseId    | bigint    | Fremmednøkkel til adresse i matrikkelen    |
-| zk_matrikkel_bruksenhetId | bigint    | Fremmednøkkel til bruksenhet i matrikkelen |
-| zk_landkodekodeid         | bigint    | Fremmednøkkel til dim_landkodekoder        |
-| zk_kommuneid              | bigint    | Fremmednøkkel dim dim_kommune              |
+| Column                    | Type      | Comment                                           |
+| ------------------------- | --------- | ------------------------------------------------- |
+| adresseId                 | bigint    | Primærnøkkel                                      |
+| zk_matrikkel_adresseId    | bigint    | Fremmednøkkel til dim_adresse i matrikkelen       |
+| zk_matrikkel_bruksenhetId | bigint    | Fremmednøkkel til fact_bruksenheter i matrikkelen |
+| zk_landkodekodeid         | bigint    | Fremmednøkkel til dim_landkodekode                |
+| zk_kommuneid              | bigint    | Fremmednøkkel dim dim_kommune                     |
 | adresseKategori           | string    |
 | bolignummer               | int       |
 | adressekode               | string    |
 | adressenavn               | string    |
 | husnummer                 | int       |
 | bokstav                   | string    |
-| gaardsnummer              | int       |
-| bruksnummer               | int       |
-| festenummer               | int       |
-| undernummer               | int       |
+| gaardsnummer              | int       | Likt gårdsnummer i matrikkelen                    |
+| bruksnummer               | int       | Likt bruksnummer i matrikkelen                    |
+| festenummer               | int       | Likt festenummer i matrikkelen                    |
+| undernummer               | int       | Likt undernummer i matrikkelen                    |
 | adressetekst              | string    |
 | keyId                     | bigint    |
 | oppdateringsdato          | timestamp |
@@ -107,7 +109,7 @@ Tabellen inneholder alle adresser lagret i Grunnboken. Tabellen inkluderer kateg
 
 ---
 
-### dim_aarsaksgebyrfritakkoder
+### dim_aarsaksgebyrfritakkode
 
 **Description:**
 
@@ -123,7 +125,7 @@ Tabellen inneholder alle adresser lagret i Grunnboken. Tabellen inkluderer kateg
 
 ---
 
-### dim_aarsaksparagrafkoder
+### dim_aarsaksparagrafkode
 
 **Description:**
 
@@ -139,15 +141,15 @@ Tabellen inneholder alle adresser lagret i Grunnboken. Tabellen inkluderer kateg
 
 ---
 
-### dim_anketypekoder
+### dim_anketypekode
 
 **Description:**
 
 **Schema:**
 
-| Column           | Type      | Comment |
-| ---------------- | --------- | ------- |
-| anketypekodeid   | bigint    |
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| anketypekodeid   | bigint    | Primærnøkkel |
 | anketype         | string    |
 | oppdateringsdato | timestamp |
 | from_datetime    | timestamp |
@@ -155,15 +157,15 @@ Tabellen inneholder alle adresser lagret i Grunnboken. Tabellen inkluderer kateg
 
 ---
 
-### dim_boligtypekoder
+### dim_boligtypekode
 
 **Description:**
 
 **Schema:**
 
-| Column           | Type      |
-| ---------------- | --------- |
-| boligtypekodeid  | bigint    |
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| boligtypekodeid  | bigint    | Primærnøkkel |
 | boligtype        | string    |
 | oppdateringsdato | timestamp |
 | from_datetime    | timestamp |
@@ -179,10 +181,10 @@ Borettslag er ”eit samvirkeføretak som har til føremål å gi andelseigarane
 
 **Schema:**
 
-| Column              | Type      |
-| ------------------- | --------- |
-| borettslagId        | bigint    |
-| zk_personId         | bigint    |
+| Column              | Type      | Comment                                                                 |
+| ------------------- | --------- | ----------------------------------------------------------------------- |
+| borettslagId        | bigint    | Primærnøkkel                                                            |
+| zk_personId         | bigint    | Fremmednøkkel til dim_juridisk_person eller dim_fysisk_person_encrypted |
 | historisk           | boolean   |
 | oppdateringsdato    | timestamp |
 | from_datetime       | timestamp |
@@ -191,15 +193,15 @@ Borettslag er ”eit samvirkeføretak som har til føremål å gi andelseigarane
 
 ---
 
-### dim_brukstypekoder
+### dim_brukstypekode
 
 **Description:**
 
 **Schema:**
 
-| Column           | Type      |
-| ---------------- | --------- |
-| brukstypekodeid  | bigint    |
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| brukstypekodeid  | bigint    | Primærnøkkel |
 | brukstype        | string    |
 | oppdateringsdato | timestamp |
 | from_datetime    | timestamp |
@@ -211,13 +213,13 @@ Borettslag er ”eit samvirkeføretak som har til føremål å gi andelseigarane
 
 **Description:**
 
-Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en _rettsstiftelse_ tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder. zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskoder for å angi dokumentets status (f.eks. "tinglyst"). Dokument er delt i dim_dokument og fact_dokument, begge med primary key dokumentId.
+Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en _rettsstiftelse_ tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder. zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskode for å angi dokumentets status (f.eks. "tinglyst"). Dokument er delt i dim_dokument og fact_dokument, begge med primary key dokumentId.
 
 **Schema:**
 
-| Column              | Type      |
-| ------------------- | --------- |
-| dokumentId          | bigint    |
+| Column              | Type      | Comment      |
+| ------------------- | --------- | ------------ |
+| dokumentId          | bigint    | Primærnøkkel |
 | dokumentaar         | int       |
 | dokumentnummer      | int       |
 | datoregistrert      | boolean   |
@@ -229,17 +231,17 @@ Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser so
 
 ---
 
-### dim_dokumentstatuskoder
+### dim_dokumentstatuskode
 
 **Description:**
 
-Status til et dokument. For eksempel "Tinglyst" eller "Nektet".
+Status til et dokument. For eksempel "Tinglyst", "Under konferering" eller "Nektet".
 
 **Schema:**
 
-| Column               | Type      |
-| -------------------- | --------- |
-| dokumentstatuskodeid | bigint    |
+| Column               | Type      | Comment      |
+| -------------------- | --------- | ------------ |
+| dokumentstatuskodeid | bigint    | Primærnøkkel |
 | dokumentstatus       | string    |
 | oppdateringsdato     | timestamp |
 | from_datetime        | timestamp |
@@ -247,32 +249,36 @@ Status til et dokument. For eksempel "Tinglyst" eller "Nektet".
 
 ---
 
-### dim_dokavgiftsaarsakkoder
+### dim_dokumentavgiftsaarsakkode
 
 **Description:**
 
 **Schema:**
 
-| Column                 | Type      |
-| ---------------------- | --------- |
-| dokavgiftsaarsakkodeid | bigint    |
-| dokavgiftsaarsak       | string    |
-| oppdateringsdato       | timestamp |
-| from_datetime          | timestamp |
-| to_datetime            | timestamp |
+| Column                      | Type      | Comment      |
+| --------------------------- | --------- | ------------ |
+| dokumentavgiftsaarsakkodeid | bigint    | Primærnøkkel |
+| dokumentavgiftsaarsak       | string    |
+| oppdateringsdato            | timestamp |
+| from_datetime               | timestamp |
+| to_datetime                 | timestamp |
 
 ---
 
-### dim_embetekoder
+### dim_embetekode
 
 **Description:**
 
+Liste over alle embetenummer i systemet. Tinglysingen lå tidligere ved domstolene. Disse er/var organisert i ulike embeter, hvor flere kommuner kunne sogne til et embete. Flere dokumenter kan derfor ha samme årstall og dokumentnummer, men er altså ført i ulike embeter. Dette er grunnen til at embete må med som identifikasjon av dokumentet.
+
+Dokumenter som tinglyses i dag i fast eiendom har embetenummer 200, i borett 201.
+
 **Schema:**
 
-| Column           | Type      |
-| ---------------- | --------- |
-| embetekodeid     | bigint    |
-| embete           | string    |
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| embetekodeid     | bigint    | Primærnøkkel |
+| embete           | string    | Embetenummer |
 | oppdateringsdato | timestamp |
 | from_datetime    | timestamp |
 | to_datetime      | timestamp |
@@ -287,10 +293,10 @@ Tabellen inneholder alle fysiske personer som er registrert i grunnboksdatabasen
 
 **Schema:**
 
-| Column                             | Type      |
-| ---------------------------------- | --------- |
-| fysiskPersonId                     | bigint    |
-| zk_identifikasjonsnummerTypeKodeId | bigint    |
+| Column                             | Type      | Comment                                             |
+| ---------------------------------- | --------- | --------------------------------------------------- |
+| fysiskPersonId                     | bigint    | Primærnøkkel                                        |
+| zk_identifikasjonsnummerTypeKodeId | bigint    | Fremmednøkkel til dim_identifikasjonsnummertypekode |
 | identifikasjonsnummer              | string    |
 | navn                               | string    |
 | historisk                          | boolean   |
@@ -302,7 +308,7 @@ Tabellen inneholder alle fysiske personer som er registrert i grunnboksdatabasen
 
 ---
 
-### dim_identifikasjonsnummertypekoder
+### dim_identifikasjonsnummertypekode
 
 **Description:**
 
@@ -310,9 +316,9 @@ Type for et identifikasjonsnummer. Enten fødselsnummer, organisasjonsnummer ell
 
 **Schema:**
 
-| Column                          | Type      |
-| ------------------------------- | --------- |
-| identifikasjonsnummertypekodeid | bigint    |
+| Column                          | Type      | Comment      |
+| ------------------------------- | --------- | ------------ |
+| identifikasjonsnummertypekodeid | bigint    | Primærnøkkel |
 | identifikasjonsnummertype       | string    |
 | oppdateringsdato                | timestamp |
 | from_datetime                   | timestamp |
@@ -328,11 +334,11 @@ Tabellen inneholder juridiske personer som er registrert i grunnboksdatabasen. T
 
 **Schema:**
 
-| Column                             | Type      |
-| ---------------------------------- | --------- |
-| juridiskPersonId                   | bigint    |
-| zk_identifikasjonsnummerTypeKodeId | bigint    |
-| identifikasjonsnummer              | string    |
+| Column                             | Type      | Comment                                             |
+| ---------------------------------- | --------- | --------------------------------------------------- |
+| juridiskPersonId                   | bigint    | Primærnøkkel                                        |
+| zk_identifikasjonsnummerTypeKodeId | bigint    | Fremmednøkkel til dim_identifikasjonsnummertypekode |
+| identifikasjonsnummer              | string    | Organisasjonsnummer                                 |
 | navn                               | string    |
 | historisk                          | boolean   |
 | oppdateringsdato                   | timestamp |
@@ -350,11 +356,11 @@ Tabellen inneholder norske kommuner med kommunenummer og navn, både historiske 
 
 **Schema:**
 
-| Column              | Type      |
-| ------------------- | --------- |
-| kommuneId           | bigint    |
-| kommunenummer       | string    |
-| navn                | string    |
+| Column              | Type      | Comment                 |
+| ------------------- | --------- | ----------------------- |
+| kommuneId           | bigint    | Primærnøkkel            |
+| kommunenummer       | string    | Kommunenummer, 4 siffer |
+| navn                | string    | Kommunenavn             |
 | historisk           | boolean   |
 | oppdateringsdato    | timestamp |
 | from_datetime       | timestamp |
@@ -373,13 +379,15 @@ Ved Arealoverføring mellom matrikkelenheter skjer det en omsetning, og det kan 
 
 Det samme gjelder ved endring av sameiebrøk mellom seksjoner i et seksjonssameie. Verdier flyttes da mellom seksjonene.
 
+Informasjon om registerenhetsrettene som er omsatt under en omsetning finnes i dim_omsattregisterenhetsrett_encrypted, som kan knyttes til omsetning med sin fremmednøkkel zk_omsetningId.
+
 Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som knyttes til dim_omsetning/fact_omsetning ved zk_omsetningId. Hvilke registerenhetsretter som er omsatt kan finnes i dim_omsattregisterenhetsrett_encrypted.
 
 **Schema:**
 
-| Column                        | Type      |
-| ----------------------------- | --------- |
-| omsetningId                   | bigint    |
+| Column                        | Type      | Comment      |
+| ----------------------------- | --------- | ------------ |
+| omsetningId                   | bigint    | Primærnøkkel |
 | omsetningKategori             | string    |
 | utlysttilsalgpaadetfriemarked | boolean   |
 | hardokumentavgift             | boolean   |
@@ -391,7 +399,7 @@ Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som kn
 
 ---
 
-### dim_omsetningstypekoder
+### dim_omsetningstypekode
 
 **Description:**
 
@@ -399,9 +407,9 @@ Tabellen inneholder liste over omsetningstyper, altså nærmere om hva som er å
 
 **Schema:**
 
-| Column               | Type      |
-| -------------------- | --------- |
-| omsetningstypekodeid | bigint    |
+| Column               | Type      | Comment      |
+| -------------------- | --------- | ------------ |
+| omsetningstypekodeid | bigint    | Primærnøkkel |
 | omsetningstype       | string    |
 | oppdateringsdato     | timestamp |
 | from_datetime        | timestamp |
@@ -413,19 +421,19 @@ Tabellen inneholder liste over omsetningstyper, altså nærmere om hva som er å
 
 **Description:**
 
-Tabellen inneholder informasjon om de omsatt Registerenhetsrettene tilknyttet en omsetning. Kan knyttes til dim_omsetning_encrypted/fact_omsetning_encrypted med zk_omsetningId og til dim_registerenhetsrett med zk_registerenhetsrettId.
+Tabellen inneholder informasjon om de omsatte Registerenhetsrettene tilknyttet en omsetning. Kan knyttes til dim_omsetning_encrypted/fact_omsetning_encrypted med zk_omsetningId og til dim_registerenhetsrett med zk_registerenhetsrettId.
 
 Boligtype angir hva partene selv har oppgitt om eventuell bebyggelse vedørerende registerenhetsretten. Brukstype angir hva partene selv har oppgitt er registerenhetsrettens brukstype.
 
 **Schema:**
 
-| Column                           | Type      |
-| -------------------------------- | --------- |
-| omsattRegisterenhetsrettId       | bigint    |
-| zk_omsetningId                   | bigint    |
-| zk_registerenhetsrettId          | bigint    |
-| zk_boligtypekodeid               | bigint    |
-| zk_brukstypekodeid               | bigint    |
+| Column                           | Type      | Comment                                    |
+| -------------------------------- | --------- | ------------------------------------------ |
+| omsattRegisterenhetsrettId       | bigint    | Primærnøkkel                               |
+| zk_omsetningId                   | bigint    | Fremmednøkkel til fact_omsetning_encrypted |
+| zk_registerenhetsrettId          | bigint    | Fremmednøkkel til dim_registerenhetsrett   |
+| zk_boligtypekodeid               | bigint    | Fremmednøkkel til dim_boligtypekode        |
+| zk_brukstypekodeid               | bigint    | Fremmednøkkel til dim_brukstypekode        |
 | omsattRegisterenhetsrettKategori | string    |
 | oppdateringsdato                 | timestamp |
 | from_datetime                    | timestamp |
@@ -444,14 +452,14 @@ For hver oppføring vil ENTEN zk_fra_registerenhetsrettId og zk_til_registerenhe
 
 **Schema:**
 
-| Column                            | Type      |
-| --------------------------------- | --------- |
-| overfoeringOmfatterId             | bigint    |
-| zk_overfoeringId                  | bigint    |
-| zk_fra_registerenhetsrettId       | bigint    |
-| zk_til_registerenhetsrettId       | bigint    |
-| zk_fra_registerenhetsrettsandelId | bigint    |
-| zk_til_registerenhetsrettsandelId | bigint    |
+| Column                            | Type      | Comment                                                                                                               |
+| --------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
+| overfoeringOmfatterId             | bigint    | Primærnøkkel                                                                                                          |
+| zk_overfoeringId                  | bigint    | Fremmednøkkel til fact_overfoering_encrypted                                                                          |
+| zk_fra_registerenhetsrettId       | bigint    | Fremmednøkkel til dim_registerenhetsrett for registerenhetsretten som rettsstiftelsen er overført fra                 |
+| zk_til_registerenhetsrettId       | bigint    | Fremmednøkkel til dim_registerenhetsrett for registerenhetsretten som rettsstiftelsen er overført til                 |
+| zk_fra_registerenhetsrettsandelId | bigint    | Fremmednøkkel til dim_registerenhetsrettsandel_encrypted for registerenhetsretten som rettsstiftelsen er overført fra |
+| zk_til_registerenhetsrettsandelId | bigint    | Fremmednøkkel til dim_registerenhetsrettsandel_encrypted for registerenhetsretten som rettsstiftelsen er overført til |
 | keyId                             | bigint    |
 | oppdateringsdato                  | timestamp |
 | from_datetime                     | timestamp |
@@ -460,15 +468,15 @@ For hver oppføring vil ENTEN zk_fra_registerenhetsrettId og zk_til_registerenhe
 
 ---
 
-### dim_periodekoder
+### dim_periodekode
 
 **Description:**
 
 **Schema:**
 
-| Column           | Type      |
-| ---------------- | --------- |
-| periodekodeid    | bigint    |
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| periodekodeid    | bigint    | Primærnøkkel |
 | periode          | string    |
 | oppdateringsdato | timestamp |
 | from_datetime    | timestamp |
@@ -480,24 +488,26 @@ For hver oppføring vil ENTEN zk_fra_registerenhetsrettId og zk_til_registerenhe
 
 **Description:**
 
-En registerenhet er enheten man registrerer en rettsstiftelse på. For en fast eiendom er registerenheten en matrikkelenhet, for borett er det en borettslagsandel. Dette angis i kolonnen _registerenhetKategori_. Registerenheter som er matrikkelenheter kan knyttes til matrikkelenheter i matrikkelen med kommunenummer, gaardsnummer, bruksnummer, festenummer og/eller seksjonsnummer. Verdi lik 0 i disse feltene tilsvarer en nullverdi. Kommunenummer er lagret i dim_kommune og kan knyttes til med fremmednøkkel zk_kommuneId i fact_registerenhet.
+En registerenhet er enheten man registrerer en rettsstiftelse på. For en fast eiendom er registerenheten en matrikkelenhet, for borett er det en borettslagsandel. Dette angis i kolonnen _registerenhetKategori_.
 
-Registerenheter som er en borettslagsandel har fremmednøkkel zk_borettslagId til dim_borettslag og har et andelsnummer.
+Registerenheter som har registerenhetKategori lik _Matrikkelenhet_, _Festegrunn_ eller _Seksjon_ kan knyttes til matrikkelenheter i matrikkelen ved hjelp av kommunenummer, gaardsnummer, bruksnummer, festenummer og/eller seksjonsnummer. Verdi lik 0 i disse feltene tilsvarer en nullverdi. Kommunenummer er lagret i dim_kommune og kan knyttes til med fremmednøkkel zk_kommuneId i fact_registerenhet.
 
-Registerenhet er delt i dim_registerenhet og fact_registerenhet. Fremmednøkler finnes i fact_registerenhet. Begge har primærnøkkel registerenhetId.
+Registerenheter med registerenhetKategori lik _Borettslagsandel_ har fremmednøkkel zk_borettslagId til dim_borettslag og har et andelsnummer.
+
+Registerenhet er delt i dim_registerenhet og fact_registerenhet. Gårdsnummer, bruksnummer osv. finnes i dim_registerenhet. Fremmednøkler finnes i fact_registerenhet. Begge har primærnøkkel registerenhetId.
 
 **Schema:**
 
-| Column                        | Type      |
-| ----------------------------- | --------- |
-| registerenhetId               | bigint    |
-| registerenhetKategori         | string    |
+| Column                        | Type      | Comment                                                            |
+| ----------------------------- | --------- | ------------------------------------------------------------------ |
+| registerenhetId               | bigint    | Primærnøkkel                                                       |
+| registerenhetKategori         | string    | "Matrikkelenhet", "Festegrunn", "Seksjon" eller "Borettslagsandel" |
 | utgaatt                       | boolean   |
-| gaardsnummer                  | int       |
-| bruksnummer                   | int       |
-| festenummer                   | int       |
-| seksjonsnummer                | int       |
-| andelsnummer                  | int       |
+| gaardsnummer                  | int       | Likt gårdsnummer i matrikkelen                                     |
+| bruksnummer                   | int       | Likt bruksnummer i matrikkelen                                     |
+| festenummer                   | int       | Likt festenummer i matrikkelen                                     |
+| seksjonsnummer                | int       | Likt seksjonsnummer i matrikkelen                                  |
+| andelsnummer                  | int       | Andelsnummer for en borettslagsandel                               |
 | tinglyst                      | boolean   |
 | beregneterseksjonert          | boolean   |
 | beregnetharaktivefestegrunner | boolean   |
@@ -521,11 +531,11 @@ En registerenhetsrett kan knyttes til tilhørende registerenhet i dim_registeren
 
 **Schema:**
 
-| Column                      | Type      |
-| --------------------------- | --------- |
-| registerenhetsrettId        | bigint    |
-| zk_registerenhetId          | bigint    |
-| zk_registerenhetsrettKodeId | bigint    |
+| Column                      | Type      | Comment                                      |
+| --------------------------- | --------- | -------------------------------------------- |
+| registerenhetsrettId        | bigint    | Primærnøkkel                                 |
+| zk_registerenhetId          | bigint    | Fremmednøkkel til fact_registerenhet         |
+| zk_registerenhetsrettKodeId | bigint    | Fremmednøkkel til dim_registerenhetsrettkode |
 | oppdateringsdato            | timestamp |
 | from_datetime               | timestamp |
 | to_datetime                 | timestamp |
@@ -545,9 +555,9 @@ Registerenhetsrettsandel er delt i dim_registerenhetsrettsandel og fact_register
 
 **Schema:**
 
-| Column                     | Type      |
-| -------------------------- | --------- |
-| registerenhetsrettsandelId | bigint    |
+| Column                     | Type      | Comment      |
+| -------------------------- | --------- | ------------ |
+| registerenhetsrettsandelId | bigint    | Primærnøkkel |
 | lopenummer                 | int       |
 | historisk                  | boolean   |
 | keyId                      | bigint    |
@@ -558,15 +568,15 @@ Registerenhetsrettsandel er delt i dim_registerenhetsrettsandel og fact_register
 
 ---
 
-### dim_registerenhetsrettstypekoder
+### dim_registerenhetsrettstypekode
 
 **Description:**
 
 **Schema:**
 
-| Column                        | Type      |
-| ----------------------------- | --------- |
-| registerenhetsrettstypekodeId | bigint    |
+| Column                        | Type      | Comment      |
+| ----------------------------- | --------- | ------------ |
+| registerenhetsrettstypekodeId | bigint    | Primærnøkkel |
 | registerenhetsrettstype       | string    |
 | oppdateringsdato              | timestamp |
 | from_datetime                 | timestamp |
@@ -574,15 +584,15 @@ Registerenhetsrettsandel er delt i dim_registerenhetsrettsandel og fact_register
 
 ---
 
-### dim_registerenhettypekoder
+### dim_registerenhettypekode
 
 **Description:**
 
 **Schema:**
 
-| Column                  | Type      |
-| ----------------------- | --------- |
-| registerenhettypekodeId | bigint    |
+| Column                  | Type      | Comment      |
+| ----------------------- | --------- | ------------ |
+| registerenhettypekodeId | bigint    | Primærnøkkel |
 | registerenhettype       | string    |
 | oppdateringsdato        | timestamp |
 | from_datetime           | timestamp |
@@ -616,9 +626,9 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 
 **Schema:**
 
-| Column                 | Type      |
-| ---------------------- | --------- |
-| rettsstiftelseId       | bigint    |
+| Column                 | Type      | Comment      |
+| ---------------------- | --------- | ------------ |
+| rettsstiftelseId       | bigint    | Primærnøkkel |
 | rettsstiftelseKategori | string    |
 | rettsstiftelsesnummer  | int       |
 | hargebyr               | boolean   |
@@ -651,9 +661,9 @@ Saksinformasjon er delt i dim_saksinformasjon_encrypted og fact_saksinformasjon_
 
 **Schema:**
 
-| Column              | Type      |
-| ------------------- | --------- |
-| saksinformasjonId   | bigint    |
+| Column              | Type      | Comment      |
+| ------------------- | --------- | ------------ |
+| saksinformasjonId   | bigint    | Primærnøkkel |
 | saksnummer          | int       |
 | keyId               | bigint    |
 | oppdateringsdato    | timestamp |
@@ -675,13 +685,13 @@ En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saks
 
 **Schema:**
 
-| Column                             | Type      |
-| ---------------------------------- | --------- |
-| sakspersonId                       | bigint    |
-| zk_saksinformasjonId               | bigint    |
-| zk_identifikasjonsnummerTypeKodeId | bigint    |
+| Column                             | Type      | Comment                                                                          |
+| ---------------------------------- | --------- | -------------------------------------------------------------------------------- |
+| sakspersonId                       | bigint    | Primærnøkkel                                                                     |
+| zk_saksinformasjonId               | bigint    | Fremmednøkkel til dim_saksinformasjon_encrypted / fact_saksinformasjon_encrypted |
+| zk_identifikasjonsnummerTypeKodeId | bigint    | Fremmednøkkel til dim_identifikasjonsnummertypekode                              |
 | identifikasjonsnummer              | string    |
-| sakspersonrolle                    | string    |
+| sakspersonrolle                    | string    | "innsender", "mottaker" eller "fakturamottaker"                                  |
 | adresselinje1                      | string    |
 | adresselinje2                      | string    |
 | adresselinje3                      | string    |
@@ -698,15 +708,15 @@ En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saks
 
 ---
 
-### dim_valutakode
+### dim_valutakodekode
 
 **Description:**
 
 **Schema:**
 
-| Column           | Type      |
-| ---------------- | --------- |
-| valutakodeid     | bigint    |
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| valutakodekodeid | bigint    | Primærnøkkel |
 | valutakode       | string    |
 | oppdateringsdato | timestamp |
 | from_datetime    | timestamp |
@@ -722,21 +732,21 @@ En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saks
 
 **Description:**
 
-Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en _rettsstiftelse_ tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder. zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskoder for å angi dokumentets status (f.eks. "tinglyst"). Dokument er delt i dim_dokument og fact_dokument, begge med primary key dokumentId.
+Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en _rettsstiftelse_ tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder. zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskode for å angi dokumentets status (f.eks. "tinglyst"). Dokument er delt i dim_dokument og fact_dokument, begge med primary key dokumentId.
 
 **Schema:**
 
-| Column                      | Type      |
-| --------------------------- | --------- |
-| dokumentId                  | bigint    |
-| zk_saksinformasjonId        | bigint    |
-| zk_omdokulerttil_dokumentId | bigint    |
-| zk_embetekodeId             | bigint    |
-| zk_dokumentstatusKodeId     | bigint    |
-| zk_valutaKodeId             | bigint    |
+| Column                      | Type      | Comment                                                                                  |
+| --------------------------- | --------- | ---------------------------------------------------------------------------------------- |
+| dokumentId                  | bigint    | Primærnøkkel                                                                             |
+| zk_saksinformasjonId        | bigint    | Fremmenøkkel til dim_saksinformasjon_encrypted / fact_saksinformasjon_encrypted          |
+| zk_omdokulertTil_dokumentId | bigint    | Fremmednøkkel til dim_dokument / fact_dokument for et dokument som har blitt omdokulert. |
+| zk_embetekodeId             | bigint    | Fremmednøkkel til dim_embetekode                                                         |
+| zk_dokumentstatusKodeId     | bigint    | Fremmednøkkel til dim_dokumentstatuskode                                                 |
+| zk_valutakodeKodeId         | bigint    | Fremmednøkkel til dim_valutakodekode som angir valutakode for gebyrbeløpet               |
 | gebyrbeloepsverdi           | int       |
 | gebyrbeloepstekst           | string    |
-| registreringstidspunkt      | timestamp |
+| registreringstidspunkt      | timestamp | Tidspunktet dokumentet ble registrert                                                    |
 | oppdateringsdato            | timestamp |
 | zx_ingest_timestamp         | timestamp |
 
@@ -746,15 +756,15 @@ Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser so
 
 **Description:**
 
-Denne tabellen inneholder pengebeløp knyttet til en omsetning. Beløp er oppgitt i et helt tall uten desimaler. Den tilhørende omsetningen kan finnes i dim_omsetning_encrypted / fact_omsetning_encrypted med fremmednøkkelen zk_omsetningId.
+Denne tabellen inneholder pengebeløp knyttet til en omsetning. Beløp er oppgitt i et helt tall uten desimaler. Den tilhørende omsetningen kan finnes i dim_omsetning_encrypted med fremmednøkkelen zk_omsetningId.
 
 **Schema:**
 
-| Column                  | Type      |
-| ----------------------- | --------- |
-| omsetningBeloepId       | bigint    |
-| zk_omsetningId          | bigint    |
-| zk_valutakodeId         | bigint    |
+| Column                  | Type      | Comment                                   |
+| ----------------------- | --------- | ----------------------------------------- |
+| omsetningBeloepId       | bigint    | Primærnøkkel                              |
+| zk_omsetningId          | bigint    | Fremmednøkkel til dim_omsetning_encrypted |
+| zk_valutakodeKodeId     | bigint    | Fremmednøkkel til dim_valutakodekode      |
 | omsetningBeloepKategori | string    |
 | beloepsverdi            | int       |
 | beloepstekst            | string    |
@@ -774,18 +784,20 @@ Ved Arealoverføring mellom matrikkelenheter skjer det en omsetning, og det kan 
 
 Det samme gjelder ved endring av sameiebrøk mellom seksjoner i et seksjonssameie. Verdier flyttes da mellom seksjonene.
 
+Informasjon om registerenhetsrettene som er omsatt under en omsetning finnes i dim_omsattregisterenhetsrett_encrypted, som kan knyttes til omsetning med sin fremmednøkkel zk_omsetningId.
+
 Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som knyttes til dim_omsetning/fact_omsetning ved zk_omsetningId. Hvilke registerenhetsretter som er omsatt kan finnes i dim_omsattregisterenhetsrett_encrypted.
 
 **Schema:**
 
-| Column                    | Type      |
-| ------------------------- | --------- |
-| omsetningId               | bigint    |
-| zk_omsetningstypeKodeId   | bigint    |
-| zk_dokavgiftsaarsakKodeId | bigint    |
-| keyId                     | bigint    |
-| oppdateringsdato          | timestamp |
-| zx_ingest_timestamp       | timestamp |
+| Column                         | Type      | Comment                                         |
+| ------------------------------ | --------- | ----------------------------------------------- |
+| omsetningId                    | bigint    | Primærnøkkel                                    |
+| zk_omsetningstypeKodeId        | bigint    | Fremmednøkkel til dim_omsetningstypekode        |
+| zk_dokumentavgiftsaarsakkodeid | bigint    | Fremmednøkkel til dim_dokumentavgiftsaarsakkode |
+| keyId                          | bigint    |
+| oppdateringsdato               | timestamp |
+| zx_ingest_timestamp            | timestamp |
 
 ---
 
@@ -801,11 +813,11 @@ Registerenhetsrettene og/eller registerenhetsrettsandelene som rettsstiftelsene/
 
 **Schema:**
 
-| Column                          | Type      |
-| ------------------------------- | --------- |
-| overfoeringId                   | bigint    |
-| zk_overfoert_rettstiftelseId    | bigint    |
-| zk_overfoerende_rettstiftelseId | bigint    |
+| Column                          | Type      | Comment                                                                           |
+| ------------------------------- | --------- | --------------------------------------------------------------------------------- |
+| overfoeringId                   | bigint    | Primærnøkkel                                                                      |
+| zk_overfoert_rettstiftelseId    | bigint    | Fremmednøkkel til dim_rettsstiftelse for rettsstiftelsen som er overført          |
+| zk_overfoerende_rettstiftelseId | bigint    | Fremmednøkkel til dim_rettsstiftelse for rettsstiftelsen som utløser overføringen |
 | oppdateringsdato                | timestamp |
 | zx_ingest_timestamp             | timestamp |
 
@@ -815,21 +827,23 @@ Registerenhetsrettene og/eller registerenhetsrettsandelene som rettsstiftelsene/
 
 **Description:**
 
-En registerenhet er enheten man registrerer en rettsstiftelse på. For en fast eiendom er registerenheten en matrikkelenhet, for borett er det en borettslagsandel. Dette angis i kolonnen _registerenhetKategori_. Registerenheter som er matrikkelenheter kan knyttes til matrikkelenheter i matrikkelen med kommunenummer, gaardsnummer, bruksnummer, festenummer og/eller seksjonsnummer. Verdi lik 0 i disse feltene tilsvarer en nullverdi. Kommunenummer er lagret i dim_kommune og kan knyttes til med fremmednøkkel zk_kommuneId i fact_registerenhet.
+En registerenhet er enheten man registrerer en rettsstiftelse på. For en fast eiendom er registerenheten en matrikkelenhet, for borett er det en borettslagsandel. Dette angis i kolonnen _registerenhetKategori_.
 
-Registerenheter som er en borettslagsandel har fremmednøkkel zk_borettslagId til dim_borettslag og har et andelsnummer.
+Registerenheter som har registerenhetKategori lik _Matrikkelenhet_, _Festegrunn_ eller _Seksjon_ kan knyttes til matrikkelenheter i matrikkelen ved hjelp av kommunenummer, gaardsnummer, bruksnummer, festenummer og/eller seksjonsnummer. Verdi lik 0 i disse feltene tilsvarer en nullverdi. Kommunenummer er lagret i dim_kommune og kan knyttes til med fremmednøkkel zk_kommuneId i fact_registerenhet.
 
-Registerenhet er delt i dim_registerenhet og fact_registerenhet. Fremmednøkler finnes i fact_registerenhet. Begge har primærnøkkel registerenhetId.
+Registerenheter med registerenhetKategori lik _Borettslagsandel_ har fremmednøkkel zk_borettslagId til dim_borettslag og har et andelsnummer.
+
+Registerenhet er delt i dim_registerenhet og fact_registerenhet. Gårdsnummer, bruksnummer osv. finnes i dim_registerenhet. Fremmednøkler finnes i fact_registerenhet. Begge har primærnøkkel registerenhetId.
 
 **Schema:**
 
-| Column                            | Type      |
-| --------------------------------- | --------- |
-| registerenhetId                   | bigint    |
-| zk_kommuneId                      | bigint    |
-| zk_borettslagId                   | bigint    |
-| zk_adresseId                      | bigint    |
-| zk_omnummererttil_registerenhetId | bigint    |
+| Column                            | Type      | Comment                                                                          |
+| --------------------------------- | --------- | -------------------------------------------------------------------------------- |
+| registerenhetId                   | bigint    | Primærnøkkel                                                                     |
+| zk_kommuneId                      | bigint    | Fremmednøkkel til dim_kommune                                                    |
+| zk_borettslagId                   | bigint    | Fremmednøkkel til dim_borettslag                                                 |
+| zk_adresseId                      | bigint    | Fremmednøkkel til dim_adresse_encrypted                                          |
+| zk_omnummererttil_registerenhetId | bigint    | Fremmednøkkel til dim_registerenhet for registerenheter som er blitt omnummerert |
 | oppdateringsdato                  | timestamp |
 | zx_ingest_timestamp               | timestamp |
 
@@ -847,12 +861,12 @@ Registerenhetsrettsandel er delt i dim_registerenhetsrettsandel og fact_register
 
 **Schema:**
 
-| Column                           | Type      |
-| -------------------------------- | --------- |
-| registerenhetsrettsandelId       | bigint    |
-| zk_registerenhetsrettId          | bigint    |
-| zk_rettighetshaver_personId      | bigint    |
-| zk_realkobletTil_registerenhetId | bigint    |
+| Column                           | Type      | Comment                                                                                          |
+| -------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
+| registerenhetsrettsandelId       | bigint    | Primærnøkkel                                                                                     |
+| zk_registerenhetsrettId          | bigint    | Fremmednøkkel til dim_registerenhetsrett                                                         |
+| zk_rettighetshaver_personId      | bigint    | Fremmednøkkel til dim_juridisk_person og dim_fysisk_person_encrypted som angir rettighetshaveren |
+| zk_realkobletTil_registerenhetId | bigint    | Fremmednøkkel til dim_registerenhet når en registerenhet er rettighetshaver                      |
 | teller                           | int       |
 | nevner                           | int       |
 | keyId                            | bigint    |
@@ -887,16 +901,16 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 
 **Schema:**
 
-| Column                       | Type      |
-| ---------------------------- | --------- |
-| rettsstiftelseId             | bigint    |
-| zk_dokumentId                | bigint    |
-| zk_omsetningId               | bigint    |
-| zk_rettsstiftelsestypeKodeId | bigint    |
-| zk_periodekodeId             | bigint    |
-| zk_aarsaksparagrafkodeId     | bigint    |
-| zk_aarsaksgebyrfritakkodeId  | bigint    |
-| zk_anketypekodeId            | bigint    |
+| Column                       | Type      | Comment                                                                                  |
+| ---------------------------- | --------- | ---------------------------------------------------------------------------------------- |
+| rettsstiftelseId             | bigint    | Primærnøkkel                                                                             |
+| zk_dokumentId                | bigint    | Fremmednøkkel til dim_dokument                                                           |
+| zk_omsetningId               | bigint    | Fremmednøkkel til dim_omsetning_encrypted for rettsstiftelser som innebærer en omsetning |
+| zk_rettsstiftelsestypeKodeId | bigint    | Fremmednøkkel til dim_rettsstiftelsestypekode                                            |
+| zk_periodekodeId             | bigint    | Fremmednøkkel til dim_periodekode                                                        |
+| zk_aarsaksparagrafkodeId     | bigint    | Fremmednøkkel til dim_aarsaksparagrafkode                                                |
+| zk_aarsaksgebyrfritakkodeId  | bigint    | Fremmednøkkel til dim_aarsaksgebyrfritakkode                                             |
+| zk_anketypekodeId            | bigint    | Fremmednøkkel til dim_anketypekode                                                       |
 | leietid                      | int       |
 | festetid_antall_aar          | int       |
 | leiefradato                  | timestamp |
@@ -928,9 +942,9 @@ Saksinformasjon er delt i dim_saksinformasjon_encrypted og fact_saksinformasjon_
 
 **Schema:**
 
-| Column              | Type      |
-| ------------------- | --------- |
-| saksinformasjonId   | bigint    |
+| Column              | Type      | Comment      |
+| ------------------- | --------- | ------------ |
+| saksinformasjonId   | bigint    | Primærnøkkel |
 | behandlingsutfall   | string    |
 | sakstatus           | string    |
 | mottaksdato         | timestamp |
