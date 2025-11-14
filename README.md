@@ -35,14 +35,13 @@ Kopier og rediger `config_example.json` i `configs/config_example.json` for å l
 configs/config.json
 ```
 
-Legg inn dine spesifikke verdier fra [test](https://onboarding.test.maskinporten.no/) eller [prod](https://onboarding.maskinporten.no/) 
-og last ned privat nøkkel, kid og clientid. Sett url til miljøet du har opprettet klienten i:  
+Legg inn dine spesifikke verdier fra [test](https://onboarding.test.maskinporten.no/) eller [prod](https://onboarding.maskinporten.no/)
+og last ned privat nøkkel, kid og clientid. Sett url til miljøet du har opprettet klienten i:
 
 ```
 "url": "https://sky.maskinporten.no/token" # I prod
 "url": "https://test.sky.maskinporten.no/token" # I test
 ```
-
 
 #### Legg til din private nøkkel
 
@@ -84,6 +83,7 @@ Når man aktivert det virtuelle miljøet og gått inn i notebooken, må det velg
 Etter man har valgt det virtuelle miljøet i notebooken skal man kunne kjøre notebooken.
 
 ### Authenticate using workload identity federation
+
 Autentisering og nedlasting av innhold er automatisert i notebooken `skyporten-deltashare.ipynb`.
 
 I credentials.json, referer til:
@@ -92,7 +92,6 @@ I credentials.json, referer til:
 - Workload Identity Provider du har rettigheter til (denne oppgir data provider).
 - Service Account som impersonator (denne oppgir data provider).
 
-
 ## Krypterte persondata
 
 Dette er under arbeid, se på readme i [crypto](./crypto/README.md)
@@ -100,19 +99,26 @@ Dette er under arbeid, se på readme i [crypto](./crypto/README.md)
 ## Datamodellering
 
 Noen ting å merke seg:
-* Dim-tabellene har SCD2-logikk, altså at hver oppdatering blir lagt til som en egen rad og gyldighetsrommet defineres med en from_datetime/to_datetime.
-* Fact-tabellene modelleres med en tabell for nåtidsbildet og en for historikk (postfix `_historical`), altså at hver rad legges til for hver oppdatering, og oppdateringsdato eller ingest_dato brukes for å få unik rad
-* En kolonne med zk-prefiks betyr at denne kolonnen er en fremmednøkkel mot en annen tabell, og brukes til å koble tabellen mot den andre tabellen med gitt nøkkel
+
+- Dim-tabellene har SCD2-logikk, altså at hver oppdatering blir lagt til som en egen rad og gyldighetsrommet defineres med en from_datetime/to_datetime.
+- Fact-tabellene modelleres med en tabell for nåtidsbildet og en for historikk (postfix `_historical`), altså at hver rad legges til for hver oppdatering, og oppdateringsdato eller ingest_dato brukes for å få unik rad
+- En kolonne med zk-prefiks betyr at denne kolonnen er en fremmednøkkel mot en annen tabell, og brukes til å koble tabellen mot den andre tabellen med gitt nøkkel
 
 Diagrammet under illustrerer dataene og relasjonene mellom de ulike tabellene.
-1. Oversikt over matrikkel eierskap, og kobling mellom matrikkel og grunnbok via **dim_kommuner** (matrikkel), **dim_kommuner** (grunnbok) og **dim_matrikkelenhet** (matrikkel) og **dim_registerenhet** (grunnbok).
-![Kobling mellom matrikkel og grunnbok.](./assets/matrikkel_eierskap.mermaid)
-2. Oversikt over grunnbok eierskap
-![Grunnbok eierskap.](./assets/grunnbok_eierskap.mermaid)
-3. Her viser vi kun primærnøkler og fremmednøkler, mens øvrige kolonner i hver tabell ikke er skissert opp her. For å hente ut fullstendig beskrivelse av alle kolonnene, kan man benytte funksjonen `get_table_metadata` beskrevet i skyporten-deltashare.ipynb For å å forenkle skissen er ikke kobling mot kommune vist for aktuelle tabeller, men kobles sammen med `zk_kommuneId` for tabellene som har denne kolonnen
-![Datastruktur for sølvdata ihht. stjernemodellering.](./assets/dataproducts-silver.svg)
 
-## Annet 
+1. Oversikt over matrikkel eierskap, og kobling mellom matrikkel og grunnbok via **dim_kommuner** (matrikkel), **dim_kommuner** (grunnbok) og **dim_matrikkelenhet** (matrikkel) og **dim_registerenhet** (grunnbok).
+   ![Kobling mellom matrikkel og grunnbok.](./assets/matrikkel_eierskap.mermaid)
+2. Oversikt over grunnbok eierskap
+   ![Grunnbok eierskap.](./assets/grunnbok_eierskap.mermaid)
+3. Her viser vi kun primærnøkler og fremmednøkler, mens øvrige kolonner i hver tabell ikke er skissert opp her. For å hente ut fullstendig beskrivelse av alle kolonnene, kan man benytte funksjonen `get_table_metadata` beskrevet i skyporten-deltashare.ipynb For å å forenkle skissen er ikke kobling mot kommune vist for aktuelle tabeller, men kobles sammen med `zk_kommuneId` for tabellene som har denne kolonnen
+
+**Sølvdata fra matrikkelen:**
+![Datastruktur for sølvdata fra matrikkelen ihht. stjernemodellering.](./assets/matrikkel-dataproducts-silver.svg)
+
+**Sølvdata fra grunnboken:**
+![Datastruktur for sølvdata fra grunnboken ihht. stjernemodellering.](./assets/grunnbok-dataproducts-silver.svg)
+
+## Annet
 
 ### Oppdateringsfrekvens
 
@@ -120,19 +126,18 @@ Vi oppdaterer dataene en gang i døgnet pt (oppdateringsvindu = 24 timer). For m
 
 Dersom det er flere endringer på samme objekt innenfor oppdateringsvinduet, vil vi kun registere den siste endringen for å få korrekt oppdateringstid/endringstidspunkt.
 
+### Versjonering
 
-### Versjonering 
-
-Målet er å holde dataproduktene stabile. Breaking changes skal varsles, i starten kan det være litt oftere, men etterhvert som produktene er gjennom utviklingsfasen vil vi varsle i forkant. 
+Målet er å holde dataproduktene stabile. Breaking changes skal varsles, i starten kan det være litt oftere, men etterhvert som produktene er gjennom utviklingsfasen vil vi varsle i forkant.
 
 Nye kolonner vil kunne legges til i eksisterende dataprodukter uten varsling og dette må håndteres av nedstrøms konsumenter. Transaksjonsloggen i deltashare skal sørge for at nye kolonner populeres med ny data.
 
-###  FAQ
+### FAQ
 
-> *dim_adresse* har noen innslag hvor `to_datetime = null`, hvordan skal vi tolke disse resultatene.
+> _dim_adresse_ har noen innslag hvor `to_datetime = null`, hvordan skal vi tolke disse resultatene.
 
 Disse adressene må behandles som gyldige adresser, tilsvarende de som har et fremtidig timestamp.
 
 > Pandas gir meg ingen datoer frem i tid, hva skjer?
 
-Pandas får en overflow på tid når vi bruker fremtidig dato 9999-01-01. Denne blir dermed 1815.  
+Pandas får en overflow på tid når vi bruker fremtidig dato 9999-01-01. Denne blir dermed 1815.

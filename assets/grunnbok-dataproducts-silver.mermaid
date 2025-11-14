@@ -1,0 +1,299 @@
+erDiagram
+
+    %% Relationships
+    
+    fact_registerenhetsrettsandel_encrypted ||--|| dim_registerenhetsrettsandel_encrypted : registerenhetsrettsandelId
+    fact_registerenhetsrettsandel_encrypted }o--|| dim_fysisk_person_encrypted : zk_rettighetshaver_personId
+    fact_registerenhetsrettsandel_encrypted }o--|| dim_juridisk_person : zk_rettighetshaver_personId
+    fact_registerenhetsrettsandel_encrypted }|--|| dim_registerenhet : zk_realkobletTil_registerenhetId
+    fact_registerenhetsrettsandel_encrypted }|--|| dim_registerenhetsrett : zk_registerenhetsrettId
+
+    dim_registerenhetsrett ||--|| fact_registerenhet : zk_registerenhetId
+    dim_registerenhetsrett ||--|| dim_registerenhetsrettstypekode : zk_registerenhetsrettstypekodeId
+    
+    fact_registerenhet ||--|| dim_registerenhet : registerenhetId
+    fact_registerenhet }|--|| dim_borettslag : zk_borettslag_id
+    fact_registerenhet }|--|| dim_kommune : zk_kommuneId
+    fact_registerenhet ||--o| fact_registerenhet : zk_omnummererttil_registerenhetId
+    fact_registerenhet }o--|| dim_adresse_encrypted : zk_adresseId
+
+    dim_borettslag }o--o| dim_juridisk_person : zk_personId
+    dim_borettslag }o--o| dim_fysisk_person_encrypted : zk_personId
+
+    fact_rettsstiftelse ||--|| dim_rettsstiftelse : rettsstiftelseId
+    fact_rettsstiftelse ||--|| dim_dokument : zk_dokumentId
+    fact_rettsstiftelse ||--|| dim_omsetning_encrypted : zk_omsetningId
+    fact_rettsstiftelse ||--|| dim_aarsaksparagrafkode : zk_aarsaksparagrafkodeid
+    fact_rettsstiftelse ||--|| dim_aarsaksgebyrfritakkode : zk_aarsaksgebyrfritakkodeid
+    fact_rettsstiftelse ||--|| dim_periodekode : zk_periodekodeid
+    fact_rettsstiftelse ||--|| dim_anketypekode : zk_anketypekodeid
+
+    fact_overfoering_encrypted }o--|| dim_rettsstiftelse : zk_overfoert_rettstiftelseId
+    fact_overfoering_encrypted }o--o| dim_rettsstiftelse : zk_overfoerende_rettstiftelseId
+
+    dim_overfoering_omfatter_encrypted }|--|| fact_overfoering_encrypted : zk_overfoeringId
+
+    dim_overfoering_omfatter_encrypted }o--o| dim_registerenhetsrett : zk_fra_registerenhetsrettId
+    dim_overfoering_omfatter_encrypted }o--o| dim_registerenhetsrett : zk_til_registerenhetsrettid
+    dim_overfoering_omfatter_encrypted }o--o| dim_registerenhetsrettsandel_encrypted : zk_fra_registerenhetsrettsandelId
+    dim_overfoering_omfatter_encrypted }o--o| dim_registerenhetsrettsandel_encrypted : zk_til_registerenhetsrettsandelid
+
+    fact_dokument ||--|| dim_dokument : dokumentId
+    fact_dokument |o--o| fact_dokument : zk_omdokulerttil_dokumentId
+    fact_dokument }o--o| dim_saksinformasjon_encrypted : zk_saksinformasjonId
+    fact_dokument }|--|| dim_embetekode : zk_embetekodeId
+    fact_dokument }|--|| dim_dokumentstatuskode : zk_dokumentstatusKodeId
+    fact_dokument }|--|| dim_valutakodekode : zk_valutakodeKodeId
+
+    fact_saksinformasjon_encrypted ||--|| dim_saksinformasjon_encrypted : saksinformasjonId
+    
+    dim_saksperson_encrypted ||--|| fact_saksinformasjon_encrypted : zk_saksinformasjonId
+    dim_saksperson_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypeKodeId
+
+    fact_omsetning_encrypted ||--|| dim_omsetning_encrypted : omsetningId
+    fact_omsetning_encrypted }|--|| dim_omsetningstypekode : zk_omsetningstypeKodeId
+    fact_omsetning_encrypted }|--|| dim_dokumentavgiftsaarsakkode : zk_dokumentavgiftsaarsakKodeId
+
+    fact_omsetning_beloep_encrypted }|--|| dim_omsetning_encrypted : zk_omsetningId
+    fact_omsetning_beloep_encrypted }|--|| dim_valutakodekode : zk_valutakodekodeId
+
+    dim_omsattregisterenhetsrett_encrypted }|--|| fact_omsetning_encrypted : zk_omsetningId
+    dim_omsattregisterenhetsrett_encrypted }o--|| dim_registerenhetsrett : zk_registerenhetsrettId
+    dim_omsattregisterenhetsrett_encrypted }|--|| dim_boligtypekode : zk_boligtypeKodeId
+    dim_omsattregisterenhetsrett_encrypted }|--|| dim_brukstypekode : zk_brukstypeKodeId
+
+    dim_fysisk_person_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
+    dim_juridisk_person }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
+
+    dim_adresse_encrypted }|--|| dim_landkodekode : zk_landkodekodeid
+    dim_adresse_encrypted }|--|| dim_kommune : zk_kommuneid
+    %% dim_adresse_encrypted }|--o| matrikkel_dim_adresse : zk_matrikkel_adresseId
+    %% dim_adresse_encrypted }|--o| matrikkel_dim_bruksenheter : zk_matrikkel_bruksenhetId
+
+    %% REGISTERENHET, RETT OG RETTSANDEL
+
+    fact_registerenhetsrettsandel_encrypted {
+        int registerenhetsrettsandelId PK
+
+        int zk_registerenhetsrettId FK
+        int zk_rettighetshaver_personId FK
+        int zk_realkobletTil_registerenhetId FK
+    }
+
+    dim_registerenhetsrettsandel_encrypted {
+        int registerenhetsrettsandelId PK
+    }
+
+    fact_registerenhet {
+        int registerenhetId FK
+
+        int zk_kommuneId FK
+        int zk_borettslagId FK
+        int zk_adresseId FK
+        int zk_omnummererttil_registerenhetId FK
+    }
+
+    dim_registerenhet {
+        int registerenhetId PK
+    }
+
+    dim_registerenhetsrett {
+        int registerenhetsrettId PK
+
+        int zk_registerenhetId FK
+        int zk_registerenhetsrettstypeKodeId FK
+    }
+
+    dim_borettslag {
+        int borettslagId PK
+        int zk_personId FK
+    }
+
+    dim_kommune {
+        int kommuneId PK
+    }
+
+    
+    %% RETTSSTIFTELSE
+
+    fact_rettsstiftelse {
+        int rettsstiftelseId FK
+
+        int zk_dokumentId FK
+        int zk_omsetningId FK
+
+        int zk_rettsstiftelsestypekodeId FK
+        int zk_periodekodeId FK
+        int zk_aarsaksparagrafKodeId FK
+        int zk_aarsaksgebyrfritakKodeId FK
+        int zk_oppr_rettsstiftelsestypekodeId FK
+        int zk_anketypekodeId FK
+    }
+
+    dim_rettsstiftelse {
+        int rettsstiftelseId FK
+    }
+
+
+    %% OVERFØRING
+
+    fact_overfoering_encrypted {
+        int overfoeringId PK
+
+        int zk_overfoert_rettstiftelseId FK
+        int zk_overfoerende_rettstiftelseId FK
+    }
+
+    dim_overfoering_omfatter_encrypted {
+        int overfoeringOmfatterId PK
+
+        int zk_overfoeringId FK
+        int zk_fra_registerenhetsrettId FK
+        int zk_til_registerenhetsrettId FK
+        int zk_fra_registerenhetsrettsandelId FK
+        int zk_til_registerenhetsrettsandelId FK
+    }
+
+
+    %% OMSETNING
+
+    fact_omsetning_encrypted {
+        int omsetningId PK
+
+        int zk_omsetningstypeKodeId FK
+        int zk_dokumentavgiftsaarsakKodeId FK
+    }
+
+    dim_omsetning_encrypted {
+        int omsetningId PK
+    }
+
+    fact_omsetning_beloep_encrypted {
+        int omsetningBeloepId PK
+
+        int zk_omsetningId FK
+        int zk_valutakodekodeId FK
+    }
+
+    dim_omsattregisterenhetsrett_encrypted {
+        int omsattRegisterenhetsrettId PK
+
+        int zk_omsetningId FK
+        int zk_registerenhetsrettId FK
+        int zk_boligtypekodeid FK
+        int zk_brukstypekodeid FK
+    }
+
+
+    %% DOKUMENT
+
+    fact_dokument {
+        int dokumentId FK
+
+        int zk_saksinformasjonId FK
+        int zk_omdokulerttil_dokumentId FK
+
+        int zk_embetekodeId FK
+        int zk_dokumentstatusKodeId FK
+        int zk_valutakodeKodeId FK
+    }
+
+    dim_dokument {
+        int dokumentId PK
+    }
+
+
+    %% PERSON
+
+    dim_fysisk_person_encrypted {
+        int fysiskPersonId PK
+        int zk_identifikasjonsnummerTypeKodeId FK
+    }
+
+    dim_juridisk_person {
+        int juridiskPersonId PK
+        int zk_identifikasjonsnummerTypeKodeId FK
+    }
+
+    fact_saksinformasjon_encrypted {
+        int saksinformasjonId PK
+    }
+
+    dim_saksinformasjon_encrypted {
+        int saksinformasjonId PK
+    }
+
+    dim_saksperson_encrypted {
+        int sakspersonId PK
+
+        int zk_saksinformasjonId FK
+        int zk_identifikasjonsnummerTypeKodeId FK
+    }
+
+    dim_adresse_encrypted {
+        int adresseId PK
+        
+        int zk_landkodekodeid FK
+        int zk_kommuneid FK
+        int zk_matrikkel_adresseId FK
+        int zk_matrikkel_bruksenhetId FK
+    }
+
+
+    %% KODELISTER
+
+    dim_aarsaksgebyrfritakkode {
+        int aarsaksgebyrfritakkodeid PK
+    }
+
+    dim_aarsaksparagrafkode {
+        int aarsaksparagrafkodeid PK
+    }
+
+    dim_anketypekode {
+        int anketypekodeid PK
+    }
+
+    dim_boligtypekode {
+        int boligtypekodeid PK
+    }
+
+    dim_brukstypekode {
+        int brukstypekodeid PK
+    }
+
+    dim_dokumentavgiftsaarsakkode {
+        int dokumentavgiftsaarsakkodeid PK
+    }
+
+    dim_dokumentstatuskode {
+        int dokumentstatuskodeid PK
+    }
+
+    dim_embetekode {
+        int embetekodeid PK
+    }
+
+    dim_identifikasjonsnummertypekode {
+        int identifikasjonsnummertypekodeid PK
+    }
+
+    dim_landkodekode {
+        int landkodekodeid PK
+    }
+
+    dim_omsetningstypekode {
+        int omsetningstypekodeid PK
+    }
+
+    dim_periodekode {
+        int periodekodeid PK
+    }
+
+    dim_registerenhetsrettstypekode {
+        int registerenhetsrettstypekodeId PK
+    }
+
+    dim_valutakodekode {
+        int valutakodekodeid PK
+    }
