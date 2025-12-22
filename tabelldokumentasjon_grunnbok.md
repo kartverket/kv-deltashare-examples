@@ -647,6 +647,20 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 
 ---
 
+### dim_rettsstiftelse_til_dokument
+
+**Description:**
+
+**Schema:**
+
+| Column                 | Type   | Comment      |
+| ---------------------- | ------ | ------------ |
+| rettsstiftelseId       | bigint | Primærnøkkel |
+| rettsstiftelseKategori | string |
+| rettsstiftelsesnummer  | int    |
+
+---
+
 ### dim_saksinformasjon_encrypted
 
 **Description:**
