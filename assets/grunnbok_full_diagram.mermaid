@@ -23,7 +23,6 @@ erDiagram
     fact_rettsstiftelse ||--|| dim_rettsstiftelse : rettsstiftelseId
     fact_rettsstiftelse ||--|| dim_dokument : zk_dokumentId
     fact_rettsstiftelse ||--|| dim_omsetning_encrypted : zk_omsetningId
-    %% fact_rettsstiftelse ||--|| dim_rettsstiftelsestypekode : zk_rettsstiftelsestypekodeid
     fact_rettsstiftelse ||--|| dim_aarsaksparagrafkode : zk_aarsaksparagrafkodeid
     fact_rettsstiftelse ||--|| dim_aarsaksgebyrfritakkode : zk_aarsaksgebyrfritakkodeid
     fact_rettsstiftelse ||--|| dim_periodekode : zk_periodekodeid
@@ -31,11 +30,11 @@ erDiagram
 
     dim_rettsstiftelse_til_dokument }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
     dim_rettsstiftelse_til_dokument }o--o| dim_dokument : zk_dokumentId
-    dim_rettsstiftese_til_person_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
-    dim_rettsstiftese_til_person_encrypted }o--o| dim_fysisk_person_encrypted : zk_personId
-    dim_rettsstiftese_til_person_encrypted }o--o| dim_juridisk_person : zk_personId
-    dim_rettsstiftese_til_registerenhetsrett_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
-    dim_rettsstiftese_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
+    dim_rettsstiftelse_til_person_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_person_encrypted }o--o| dim_fysisk_person_encrypted : zk_personId
+    dim_rettsstiftelse_til_person_encrypted }o--o| dim_juridisk_person : zk_personId
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
     dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
     dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
 
@@ -88,6 +87,9 @@ erDiagram
     dim_omsattregisterenhetsrett_encrypted }o--|| dim_registerenhetsrett : zk_registerenhetsrettId
     dim_omsattregisterenhetsrett_encrypted }|--|| dim_boligtypekode : zk_boligtypeKodeId
     dim_omsattregisterenhetsrett_encrypted }|--|| dim_brukstypekode : zk_brukstypeKodeId
+
+    dim_omsattregisterenhetsrettsandel_encrypted }o--|| dim_omsattregisterenhetsrett_encrypted : zk_omsattregisterenhetsrettId
+    dim_omsattregisterenhetsrettsandel_encrypted }o--o| fact_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
 
     dim_fysisk_person_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
     dim_juridisk_person }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
@@ -395,7 +397,6 @@ erDiagram
         int keyId "FK to encryption key table"
         timestamp oppdateringsdato "Date updated"
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
-
     }
 
     %% OVERFØRING
@@ -490,7 +491,22 @@ erDiagram
         timestamp to_datetime "End of SCD2-validity for this record"
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
-
+    
+    dim_omsattregisterenhetsrettsandel_encrypted {
+        int omsattRegisterenhetsrettsandelId "PK"
+        
+        %% Fra 'rolle':
+        string omsattRegisterenhetsrettsandelKategori
+        
+        int zk_omsattregisterenhetsrettId "FK to dim_omsattregisterenhetsrett_encrypted"
+        int zk_registerenhetsrettsandelId "FK to fact_registerenhetsrettsandel_encrypted"
+        
+        string keyId FK "FK to encryption key table"
+        timestamp oppdateringsdato "Date updated"
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
 
     %% DOKUMENT
 

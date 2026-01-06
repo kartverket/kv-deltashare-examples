@@ -28,6 +28,21 @@ erDiagram
     fact_rettsstiftelse ||--|| dim_periodekode : zk_periodekodeid
     fact_rettsstiftelse ||--|| dim_anketypekode : zk_anketypekodeid
 
+    dim_rettsstiftelse_til_dokument }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_dokument }o--o| dim_dokument : zk_dokumentId
+    dim_rettsstiftelse_til_person_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_person_encrypted }o--o| dim_fysisk_person_encrypted : zk_personId
+    dim_rettsstiftelse_til_person_encrypted }o--o| dim_juridisk_person : zk_personId
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
+
+    fact_rettsstiftelse_beloep }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    fact_rettsstiftelse_beloep }|--|| dim_valutakodekode : zk_valutakodekodeId
+    fact_rettsstiftelse_beloepforperiode }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    fact_rettsstiftelse_beloepforperiode }|--|| dim_valutakodekode : zk_valutakodekodeId
+
     fact_overfoering_encrypted }o--|| dim_rettsstiftelse : zk_overfoert_rettstiftelseId
     fact_overfoering_encrypted }o--o| dim_rettsstiftelse : zk_overfoerende_rettstiftelseId
 
@@ -61,6 +76,9 @@ erDiagram
     dim_omsattregisterenhetsrett_encrypted }o--|| dim_registerenhetsrett : zk_registerenhetsrettId
     dim_omsattregisterenhetsrett_encrypted }|--|| dim_boligtypekode : zk_boligtypeKodeId
     dim_omsattregisterenhetsrett_encrypted }|--|| dim_brukstypekode : zk_brukstypeKodeId
+
+    dim_omsattregisterenhetsrettsandel_encrypted }o--|| dim_omsattregisterenhetsrett_encrypted : zk_omsattregisterenhetsrettId
+    dim_omsattregisterenhetsrettsandel_encrypted }o--o| fact_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
 
     dim_fysisk_person_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
     dim_juridisk_person }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
@@ -134,6 +152,77 @@ erDiagram
         int rettsstiftelseId FK
     }
 
+    dim_delavrett {
+        int delavrettId "PK"
+
+        int zk_kilde_rettsstiftelse FK
+        int zk_maal_rettsstiftelse FK
+    }
+
+    dim_delavrett_til_registerenhetsrett_encrypted {
+        int delavrettTilRegisterenhetsrettId "PK"
+
+        int zk_delavrettId FK
+        int zk_registerenhetsrettId FK
+    }
+
+    dim_delavrett_til_registerenhetsrettsandel_encrypted {
+        int delavrettTilRegisterenhetsrettsandelId "PK"
+
+        int zk_delavrettId FK
+        int zk_registerenhetsrettsandelId FK
+    }
+
+    dim_rettsstiftelse_til_dokument {
+        int rettsstiftelsetildokumentId "PK"
+
+        int zk_rettsstiftelseId FK
+        int zk_dokumentId FK
+    }
+
+    dim_rettsstiftese_til_person_encrypted {
+        int rettsstiftelsetilpersonId "PK"
+
+        int zk_rettsstiftelseId FK
+        int zk_personId FK
+    }
+
+    dim_rettsstiftese_til_registerenhetsrett_encrypted {
+        int rettsstiftelsetilregisterenhetsrettId "PK"
+
+        int zk_rettsstiftelseId FK
+        int zk_registerenhetsrettId FK
+    }
+
+    dim_rettsstiftelse_til_rettsstiftelse {
+        int rettsstiftelsetilrettsstiftelseId "PK"
+
+        int zk_kilde_rettsstiftelseId FK
+        int zk_maal_rettsstiftelseId FK
+    }
+
+    fact_rettsstiftelse_beloep {
+        int rettsstiftelseBeloepId PK
+
+        int zk_rettsstiftelseId FK
+        int zk_valutakodekodeId FK
+    }
+
+    fact_rettsstiftelse_beloepforperiode {
+        int rettsstiftelseBeloepforperiodeId PK
+
+        int zk_rettsstiftelseId FK
+        int zk_valutakodekodeId FK
+        int zk_periodekodeId FK
+    }
+
+    fact_hefte_i_registerenhetsrettsandel_encrypted {
+        int hefteIRegisterenhetsrettsandelId PK
+
+        int zk_registerenhetsrettsandelId FK
+        int zk_rettsstiftelseId FK
+    }
+
 
     %% OVERFØRING
 
@@ -183,7 +272,14 @@ erDiagram
         int zk_boligtypekodeid FK
         int zk_brukstypekodeid FK
     }
-
+    
+    dim_omsattregisterenhetsrettsandel_encrypted {
+        int omsattRegisterenhetsrettsandelId PK
+        
+        int zk_omsattregisterenhetsrettId FK
+        int zk_registerenhetsrettsandelId FK
+        
+    }
 
     %% DOKUMENT
 

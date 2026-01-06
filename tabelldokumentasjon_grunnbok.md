@@ -33,6 +33,9 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 - [dim_boligtypekode](#dim_boligtypekode)
 - [dim_borettslag](#dim_borettslag)
 - [dim_brukstypekode](#dim_brukstypekode)
+- [dim_delavrett](#dim_delavrett)
+- [dim_delavrett_til_registerenhetsrett](#dim_delavrett_til_registerenhetsrett)
+- [dim_delavrett_til_registerenhetsrettsandel](#dim_delavrett_til_registerenhetsrettsandel)
 - [dim_dokument](#dim_dokument)
 - [dim_dokumentstatuskode](#dim_dokumentstatuskode)
 - [dim_dokavgiftsaarsakkode](#dim_dokavgiftsaarsakkode)
@@ -209,6 +212,76 @@ Borettslag er ”eit samvirkeføretak som har til føremål å gi andelseigarane
 
 ---
 
+### dim_delavrett
+
+**Description:**
+
+Del av en rett som er etablert i en rettsstiftelse. Del betyr her en delmengde av de Registerenhetsretter og/eller Registerenhetsrettsandeler som rettsstiftelsen gjelder for. På denne måten kan man begrense omfanget. Det er begrensningen som angis. Hvis det ikke er angitt noen begrensning (altså ingen relasjoner til registerenhetsrett eller registerenhetsrettsandel), er ikke omfanget begrenset, med andre ord hele rettsstiftelsen er omfattet.
+
+zk_kilde_rettsstiftelseId angir hvilken rettsstiftelsen DelAvRett har opphav i.
+
+zk_maal_rettsstiftelseId angir hvilken rettsstiftelsen DelAvRett er knyttet til.
+
+Registerenhetsrett som DelAvRett er begrenset til er angitt i tabellen dim_delavrett_til_registerenhetsrett_encrypted.
+
+Registerenhetsrettsandel som DelAvRett er begrenset til er angitt i tabellen dim_delavrett_til_registerenhetsrettsandel_encrypted.
+
+**Schema:**
+
+| Column                    | Type      | Comment                               |
+| ------------------------- | --------- | ------------------------------------- |
+| delavrettId               | bigint    | Primærnøkkel                          |
+| zk_kilde_rettsstiftelseId | bigint    | Fremmednøkkel til fact_rettsstiftelse |
+| zk_maal_rettsstiftelseId  | bigint    | Fremmednøkkel til fact_rettsstiftelse |
+| oppdateringsdato          | timestamp |
+| from_datetime             | timestamp |
+| to_datetime               | timestamp |
+| zx_ingest_timestamp       | timestamp |
+
+---
+
+### dim_delavrett_til_registerenhetsrett_encrypted
+
+**Description:**
+
+Denne tabellen angir hvilke registerenhetsretter en DelAvRett er begrenset til. zk_delavrettId angir DelAvRett og zk_registerenhetsrettsId angir registerenhetsrett som DelAvRett er begrenset til.
+
+**Schema:**
+
+| Column                           | Type      | Comment                                  |
+| -------------------------------- | --------- | ---------------------------------------- |
+| delavrettTilRegisterenhetsrettId | bigint    | Primærnøkkel                             |
+| zk_delavrettId                   | bigint    | Fremmednøkkel til dim_delavrett          |
+| zk_registerenhetsrettId          | bigint    | Fremmednøkkel til dim_registerenhetsrett |
+| keyId                            | bigint    |
+| oppdateringsdato                 | timestamp |
+| from_datetime                    | timestamp |
+| to_datetime                      | timestamp |
+| zx_ingest_timestamp              | timestamp |
+
+---
+
+### dim_delavrett_til_registerenhetsrettsandel_encrypted
+
+**Description:**
+
+Denne tabellen angir hvilke registerenhetsrettsandeler en DelAvRett er begrenset til. zk_delavrettId angir DelAvRett og zk_registerenhetsrettsandelId angir registerenhetsrettsandel som DelAvRett er begrenset til.
+
+**Schema:**
+
+| Column                                 | Type      | Comment                                         |
+| -------------------------------------- | --------- | ----------------------------------------------- |
+| delavrettTilRegisterenhetsrettsandelId | bigint    | Primærnøkkel                                    |
+| zk_delavrettId                         | bigint    | Fremmednøkkel til dim_delavrett                 |
+| zk_registerenhetsrettsandelId          | bigint    | Fremmednøkkel til fact_registerenhetsrettsandel |
+| keyId                                  | bigint    |
+| oppdateringsdato                       | timestamp |
+| from_datetime                          | timestamp |
+| to_datetime                            | timestamp |
+| zx_ingest_timestamp                    | timestamp |
+
+---
+
 ### dim_dokument
 
 **Description:**
@@ -381,6 +454,8 @@ Det samme gjelder ved endring av sameiebrøk mellom seksjoner i et seksjonssamei
 
 Informasjon om registerenhetsrettene som er omsatt under en omsetning finnes i dim_omsattregisterenhetsrett_encrypted, som kan knyttes til omsetning med sin fremmednøkkel zk_omsetningId.
 
+Informasjon om registerenhetsrettsandelene som er omsatt under en omsetning finnes i dim_omsattregisterenhetsrettsandel_encrypted. Omsattregisterenhetsrettsandel kan knyttes til omsetning via dim_omsattregisterenhetsrett_encrypted med fremmednøkkelen zk_omsattregisterenhetsrettId.
+
 Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som knyttes til dim_omsetning/fact_omsetning ved zk_omsetningId. Hvilke registerenhetsretter som er omsatt kan finnes i dim_omsattregisterenhetsrett_encrypted.
 
 **Schema:**
@@ -435,10 +510,35 @@ Boligtype angir hva partene selv har oppgitt om eventuell bebyggelse vedørerend
 | zk_boligtypekodeid               | bigint    | Fremmednøkkel til dim_boligtypekode        |
 | zk_brukstypekodeid               | bigint    | Fremmednøkkel til dim_brukstypekode        |
 | omsattRegisterenhetsrettKategori | string    |
+| keyId                            | bigint    |
 | oppdateringsdato                 | timestamp |
 | from_datetime                    | timestamp |
 | to_datetime                      | timestamp |
 | zx_ingest_timestamp              | timestamp |
+
+---
+
+### dim_omsattregisterenhetsrettsandel_encrypted
+
+**Description:**
+
+Tabellen inneholder informasjon om de omsatte Registerenhetsrettsandelene tilknyttet en omsetning. Omsatte registerenhetsrettsandeler kan knyttes til omsetning via dim_omsattregisterenhetsrett_encrypted.
+
+zk_omsattregisterenhetsrettId angir omsattregisterenhetsrett, og zk_omsetningId i dim_omsattregisterenhetsrett_encrypted angir den tilknyttede omsetningen.
+zk_registerenhetsrettsandelId angir den aktuelle registerenhetsrettsandelen.
+
+**Schema:**
+
+| Column                                 | Type      | Comment                                                  |
+| -------------------------------------- | --------- | -------------------------------------------------------- | --- |
+| omsattRegisterenhetsrettsandelId       | bigint    | Primærnøkkel                                             |     |
+| zk_omsatteregisterenhetsrettsId        | bigint    | Fremmednøkkel til dim_omsattregisterenhetsrett_encrypted |
+| omsattRegisterenhetsrettsandelKategori | string    |
+| keyId                                  | bigint    |
+| oppdateringsdato                       | timestamp |
+| from_datetime                          | timestamp |
+| to_datetime                            | timestamp |
+| zx_ingest_timestamp                    | timestamp |
 
 ---
 
@@ -651,13 +751,95 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 
 **Description:**
 
+Denne tabeller angir dokumenter som ankes for rettsstiftelser av kategorien "Anke". zk_rettsstiftelseId angir rettsstiftelsen og zk_dokumentId angir dokumentet som ankes.
+
 **Schema:**
 
-| Column                 | Type   | Comment      |
-| ---------------------- | ------ | ------------ |
-| rettsstiftelseId       | bigint | Primærnøkkel |
-| rettsstiftelseKategori | string |
-| rettsstiftelsesnummer  | int    |
+| Column                      | Type      | Comment                               |
+| --------------------------- | --------- | ------------------------------------- |
+| rettsstiftelseTilDokumentId | bigint    | Primærnøkkel                          |
+| zk_rettsstiftelseId         | bigint    | Fremmednøkkel til fact_rettsstiftelse |
+| zk_dokumentId               | bigint    | Fremmednøkkel til fact_dokument       |
+| oppdateringsdato            | timestamp |
+| from_datetime               | timestamp |
+| to_datetime                 | timestamp |
+| zx_ingest_timestamp         | timestamp |
+
+---
+
+### dim_rettsstiftelse_til_person_encrypted
+
+**Description:**
+
+Denne tabellen knytter rettsstiftelser, herunder heftelser, til personer.
+
+rettsstiftelseTilPersonKategori angir rollen den aktuelle personen har med hensyn til rettsstiftelsen, for eksempel "saksoeker" eller "rettighetshaver_aktiv". Hver kategori angir en kobling i domenemodellen. Kategorier som med suffix "\_historisk" angir historiske rader.
+
+zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_personId angir personen, som enten kan være en juridisk person i dim_juridisk_person eller en fysisk person i dim_fysisk_person_encrypted.
+
+**Schema:**
+
+| Column                          | Type      | Comment                                                             |
+| ------------------------------- | --------- | ------------------------------------------------------------------- |
+| rettsstiftelseTilPersonId       | bigint    | Primærnøkkel                                                        |
+| rettsstiftelseTilPersonKategori | string    |
+| zk_rettsstiftelseId             | bigint    | Fremmednøkkel til fact_rettsstiftelse                               |
+| zk_personId                     | bigint    | Fremmednøkkel til dim_juridisk_person / dim_fysisk_person_encrypted |
+| keyId                           | bigint    |
+| oppdateringsdato                | timestamp |
+| from_datetime                   | timestamp |
+| to_datetime                     | timestamp |
+| zx_ingest_timestamp             | timestamp |
+
+---
+
+### dim_rettsstiftelse_til_registerenhetsrett_encrypted
+
+**Description:**
+
+Denne tabellen knytter rettsstiftelser til registerenhetsretter for rettsstiftelser (heftelser) som hefter i en registerenhetsrett.
+
+For rettsstiftelser som hefter i en _registerenhetsrettsandel_ finnes koblingen i fact_hefte_i_registerenhetsrettsandel_encrypted.
+
+zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId angir registerenhetsretten som rettsstiftelsen hefter i. rettsstiftelseTilRegisterenhetsrettKategori angir kategorien til koblingen. Den er enten "HEFTER_I", "REALKOBLET_TIL" eller "HEFTER_I_HISTORISK". Sistnevnte angir historiske rader.
+
+**Schema:**
+
+| Column                                      | Type      | Comment                                  |
+| ------------------------------------------- | --------- | ---------------------------------------- |
+| rettsstiftelseTilRegisterenhetsrettId       | bigint    | Primærnøkkel                             |
+| rettsstiftelseTilRegisterenhetsrettKategori | string    |
+| zk_rettsstiftelseId                         | bigint    | Fremmednøkkel til fact_rettsstiftelse    |
+| zk_registerenhetsrettId                     | bigint    | Fremmednøkkel til dim_registerenhetsrett |
+| keyId                                       | bigint    |
+| oppdateringsdato                            | timestamp |
+| from_datetime                               | timestamp |
+| to_datetime                                 | timestamp |
+| zx_ingest_timestamp                         | timestamp |
+
+---
+
+### dim_rettsstiftelse_til_rettsstiftelse
+
+**Description:**
+
+Denne inneholder informasjon om rettsstiftelser som hefter i andre rettsstiftelser.
+
+zk_kilde_rettsstiftelseId angir den heftende rettsstiftelsen og zk_maal_rettsstiftelse angir rettsstiftelsen den hefter i.
+
+**Schema:**
+
+| Column                                  | Type      | Comment                               |
+| --------------------------------------- | --------- | ------------------------------------- |
+| rettsstiftelseTilRettsstiftelseId       | bigint    | Primærnøkkel                          |
+| rettsstiftelseTilRettsstiftelseKategori | string    |
+| zk_kilde_rettsstiftelseId               | bigint    | Fremmednøkkel til fact_rettsstiftelse |
+| zk_maal_rettsstiftelseId                | bigint    | Fremmednøkkel til fact_rettsstiftelse |
+| keyId                                   | bigint    |
+| oppdateringsdato                        | timestamp |
+| from_datetime                           | timestamp |
+| to_datetime                             | timestamp |
+| zx_ingest_timestamp                     | timestamp |
 
 ---
 
@@ -766,6 +948,34 @@ Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser so
 
 ---
 
+### fact_hefte_i_registerenhetsrettsandel_encrypted
+
+**Description:**
+
+Denne tabellen knytter rettsstiftelser til registerenhetsrettsandel for rettsstiftelser (heftelser) som hefter i en registerenhetsrettsandel.
+
+For rettsstiftelser som hefter i en _registerenhetsrett_ finnes koblingen i dim_rettsstiftelse_til_registerenhetsrett_encrypted.
+
+zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettsandelId angir registerenhetsrettsandelen som rettsstiftelsen hefter i.
+
+Teller og nevner angir ikke en brøkdel av brøken i registerenhetsrettsandelen, men en brøk av hele Registerenhetsretten. Brøken er normalt lik, men kan være mindre enn brøken i registerenhetsrettsandelen.
+
+**Schema:**
+
+| Column                        | Type      | Comment                                                  |
+| ----------------------------- | --------- | -------------------------------------------------------- |
+| dokumentId                    | bigint    | Primærnøkkel                                             |
+| zk_rettsstiftelseId           | bigint    | Fremmenøkkel til dim_rettsstiftelse                      |
+| zk_registerenhetsrettsandelId | bigint    | Fremmednøkkel til dim_registerenhetsrettsandel_encrypted |
+| teller                        | int       |
+| nevner                        | int       |
+| historisk                     | boolean   |
+| keyId                         | bigint    |
+| oppdateringsdato              | timestamp |
+| zx_ingest_timestamp           | timestamp |
+
+---
+
 ### fact_omsetning_beloep_encrypted
 
 **Description:**
@@ -799,6 +1009,8 @@ Ved Arealoverføring mellom matrikkelenheter skjer det en omsetning, og det kan 
 Det samme gjelder ved endring av sameiebrøk mellom seksjoner i et seksjonssameie. Verdier flyttes da mellom seksjonene.
 
 Informasjon om registerenhetsrettene som er omsatt under en omsetning finnes i dim_omsattregisterenhetsrett_encrypted, som kan knyttes til omsetning med sin fremmednøkkel zk_omsetningId.
+
+Informasjon om registerenhetsrettsandelene som er omsatt under en omsetning finnes i dim_omsattregisterenhetsrettsandel_encrypted. Omsattregisterenhetsrettsandel kan knyttes til omsetning via dim_omsattregisterenhetsrett_encrypted med fremmednøkkelen zk_omsattregisterenhetsrettId.
 
 Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som knyttes til dim_omsetning/fact_omsetning ved zk_omsetningId. Hvilke registerenhetsretter som er omsatt kan finnes i dim_omsattregisterenhetsrett_encrypted.
 
@@ -939,6 +1151,53 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 | avholdt_klokkeslett          | string    |
 | oppdateringsdato             | timestamp |
 | zx_ingest_timestamp          | timestamp |
+
+---
+
+### fact_rettsstiftelse_beloep
+
+**Description:**
+
+Denne tabellen inneholder pengebeløp knyttet til en rettsstiftelse/heftelse. Det gjelder rettsstiftelser av kategoriene "Pant", "NotertPant", "VilkaarIFestekontrakt" og "TvangsForretning". For "EierskifteMatrikkelenhet" og lignende se Omsetning.
+
+Pengebeløpet er oppgitt som et heltall uten desimaler.
+
+**Schema:**
+
+| Column                       | Type      | Comment                              |
+| ---------------------------- | --------- | ------------------------------------ |
+| rettsstiftelseBeloepId       | bigint    | Primærnøkkel                         |
+| zk_rettsstiftelseId          | bigint    | Fremmednøkkel til dim_rettsstiftelse |
+| zk_valutakodeKodeId          | bigint    | Fremmednøkkel til dim_valutakodekode |
+| rettsstiftelseBeloepKategori | string    |
+| beloepsverdi                 | int       |
+| beloepstekst                 | string    |
+| oppdateringsdato             | timestamp |
+| zx_ingest_timestamp          | timestamp |
+
+---
+
+### fact_rettsstiftelse_beloepforperiode
+
+**Description:**
+
+Denne tabellen inneholder pengebeløp knyttet til en rettsstiftelse/heftelse som gjelder for en periode. Det gjelder rettsstiftelser av kategoriene "Leieavtale" og "NyeVilkaarILeieavtale". zk_periodekodeid angir perioden beløpet gjelder for, for eksempel om det er et årlig eller månedlig beløp.
+
+Pengebeløpet er oppgitt som et heltall uten desimaler.
+
+**Schema:**
+
+| Column                                 | Type      | Comment                              |
+| -------------------------------------- | --------- | ------------------------------------ |
+| rettsstiftelseBeloepId                 | bigint    | Primærnøkkel                         |
+| zk_rettsstiftelseId                    | bigint    | Fremmednøkkel til dim_rettsstiftelse |
+| zk_valutakodeKodeId                    | bigint    | Fremmednøkkel til dim_valutakodekode |
+| zk_periodeKodeId                       | bigint    | Fremmednøkkel til dim_periodekode    |
+| rettsstiftelseBeloepforperiodeKategori | string    |
+| beloepsverdi                           | int       |
+| beloepstekst                           | string    |
+| oppdateringsdato                       | timestamp |
+| zx_ingest_timestamp                    | timestamp |
 
 ---
 
