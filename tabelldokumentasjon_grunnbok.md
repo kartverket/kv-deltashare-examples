@@ -801,9 +801,16 @@ zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_personId angir person
 
 **Description:**
 
-Denne tabellen knytter rettsstiftelser til registerenhetsretter for rettsstiftelser (heftelser) som hefter i en registerenhetsrett, dvs. alle andelene i en registerenhetsrett. For rettsstiftelser som hefter i en eller flere registerenhetsrettsandeler, men ikke alle, finnes koblingen i fact_hefte_i_registerenhetsrettsandel_encrypted.
+Denne tabellen inneholder relasjoner mellom rettsstiftelser og registerenhetsretter, og typer koblinger:
 
-zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId angir registerenhetsretten som rettsstiftelsen hefter i. rettsstiftelseTilRegisterenhetsrettKategori angir kategorien til koblingen. Den er enten "HEFTER_I", "HEFTER_I_HISTORISK" eller "REALKOBLET_TIL". "HEFTER_I_HISTORISK" angir historiske rader.
+HEFTER_I / HEFTER_I_HISTORISK:
+Rader med kategori "HEFTER_I" eller "HEFTER_I_HISTORISK" angir rettsstiftelser som hefter i en registerenhetsrett, det vil si at heftelsen gjelder alle andeler i registerenhetsretten. Dersom en rettsstiftelse hefter i én eller flere, men ikke alle, registerenhetsrettsandeler, er koblingen i stedet modellert i tabellen fact_hefte_i_registerenhetsrettsandel_encrypted.
+Kategorien HEFTER_I_HISTORISK benyttes for historiske relasjoner.
+
+REALKOBLET_TIL:
+Rader med kategori REALKOBLET_TIL angir registerenhetsretter som er rettighetshaver(e) til en heftelse (rettsstiftelse).
+
+zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId angir registerenhetsretten. rettsstiftelseTilRegisterenhetsrettKategori angir typen relasjon mellom rettsstiftelsen og registerenhetsretten. Gyldige verdier er "HEFTER_I", "HEFTER_I_HISTORISK" eller "REALKOBLET_TIL".
 
 **Schema:**
 
