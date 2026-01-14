@@ -23,11 +23,36 @@ erDiagram
     fact_rettsstiftelse ||--|| dim_rettsstiftelse : rettsstiftelseId
     fact_rettsstiftelse ||--|| dim_dokument : zk_dokumentId
     fact_rettsstiftelse ||--|| dim_omsetning_encrypted : zk_omsetningId
-    %% fact_rettsstiftelse ||--|| dim_rettsstiftelsestypekode : zk_rettsstiftelsestypekodeid
     fact_rettsstiftelse ||--|| dim_aarsaksparagrafkode : zk_aarsaksparagrafkodeid
     fact_rettsstiftelse ||--|| dim_aarsaksgebyrfritakkode : zk_aarsaksgebyrfritakkodeid
     fact_rettsstiftelse ||--|| dim_periodekode : zk_periodekodeid
     fact_rettsstiftelse ||--|| dim_anketypekode : zk_anketypekodeid
+
+    dim_rettsstiftelse_til_dokument }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_dokument }o--o| dim_dokument : zk_dokumentId
+    dim_rettsstiftelse_til_person_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_person_encrypted }o--o| dim_fysisk_person_encrypted : zk_personId
+    dim_rettsstiftelse_til_person_encrypted }o--o| dim_juridisk_person : zk_personId
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
+
+    fact_rettsstiftelse_beloep }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    fact_rettsstiftelse_beloep }|--|| dim_valutakodekode : zk_valutakodekodeId
+    fact_rettsstiftelse_beloepforperiode }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
+    fact_rettsstiftelse_beloepforperiode }|--|| dim_valutakodekode : zk_valutakodekodeId
+
+    dim_delavrett ||--|| fact_rettsstiftelse : zk_kilde_rettsstiftelse
+    dim_delavrett ||--|| fact_rettsstiftelse : zk_maal_rettsstiftelse
+
+    dim_delavrett_til_registerenhetsrett_encrypted }o--|| dim_delavrett : zk_delavrettId
+    dim_delavrett_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
+    dim_delavrett_til_registerenhetsrettsandel_encrypted }o--|| dim_delavrett : zk_delavrettId
+    dim_delavrett_til_registerenhetsrettsandel_encrypted }o--o| fact_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
+
+    fact_hefte_i_registerenhetsrettsandel_encrypted }o--|| dim_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
+    fact_hefte_i_registerenhetsrettsandel_encrypted }o--|| dim_rettsstiftelse : zk_rettsstiftelseId
 
     fact_overfoering_encrypted }o--|| dim_rettsstiftelse : zk_overfoert_rettstiftelseId
     fact_overfoering_encrypted }o--o| dim_rettsstiftelse : zk_overfoerende_rettstiftelseId
@@ -63,6 +88,9 @@ erDiagram
     dim_omsattregisterenhetsrett_encrypted }|--|| dim_boligtypekode : zk_boligtypeKodeId
     dim_omsattregisterenhetsrett_encrypted }|--|| dim_brukstypekode : zk_brukstypeKodeId
 
+    dim_omsattregisterenhetsrettsandel_encrypted }o--|| dim_omsattregisterenhetsrett_encrypted : zk_omsattregisterenhetsrettId
+    dim_omsattregisterenhetsrettsandel_encrypted }o--o| fact_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
+
     dim_fysisk_person_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
     dim_juridisk_person }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypekodeId
 
@@ -70,6 +98,7 @@ erDiagram
     dim_adresse_encrypted }|--|| dim_kommune : zk_kommuneid
     dim_adresse_encrypted }|--o| matrikkel_dim_adresse : zk_matrikkel_adresseId
     dim_adresse_encrypted }|--o| matrikkel_dim_bruksenheter : zk_matrikkel_bruksenhetId
+
 
     %% REGISTERENHET, RETT OG RETTSANDEL
 
@@ -102,7 +131,7 @@ erDiagram
     }
 
     fact_registerenhet {
-        int registerenhetId PK
+        int registerenhetId FK
 
         int zk_kommuneId FK "FK to dim_kommune"
         int zk_borettslagId FK "FK to dim_borettslag (nullable)"
@@ -176,10 +205,10 @@ erDiagram
     %% RETTSSTIFTELSE
 
     fact_rettsstiftelse {
-        int rettsstiftelseId FK
+        int rettsstiftelseId "PK"
 
-        int zk_dokumentId FK "FK to dim_dokument"
-        int zk_omsetningId FK "FK to dim_omsetning_encrypted"
+        int zk_dokumentId "FK to dim_dokument"
+        int zk_omsetningId "FK to dim_omsetning_encrypted"
 
         int zk_rettsstiftelsestypekodeId FK
         int zk_periodekodeId FK
@@ -208,7 +237,7 @@ erDiagram
     }
 
     dim_rettsstiftelse {
-        int rettsstiftelseId FK
+        int rettsstiftelseId "PK"
 
         string rettsstiftelseKategori "Class"
         int rettsstiftelsesnummer
@@ -229,6 +258,146 @@ erDiagram
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
 
+    dim_delavrett {
+        int delavrettId "PK"
+
+        int zk_kilde_rettsstiftelse "FK to fact_rettsstiftelse"
+        int zk_maal_rettsstiftelse "FK to fact_rettsstiftelse"
+
+        timestamp oppdateringsdato "Date updated"
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_delavrett_til_registerenhetsrett_encrypted {
+        int delavrettTilRegisterenhetsrettId "PK"
+
+        int zk_delavrettId "FK to dim_delavrett"
+        int zk_registerenhetsrettId "FK to dim_registerenhetsrett"
+
+        int keyId "FK to encryption key table"
+        timestamp oppdateringsdato
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_delavrett_til_registerenhetsrettsandel_encrypted {
+        int delavrettTilRegisterenhetsrettsandelId "PK"
+
+        int zk_delavrettId "FK to dim_delavrett"
+        int zk_registerenhetsrettsandelId "FK to fact_registerenhetsrettsandel_encrypted"
+
+        int keyId "FK to encryption key table"
+        timestamp oppdateringsdato
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_rettsstiftelse_til_dokument {
+        int rettsstiftelsetildokumentId "PK"
+
+        int zk_rettsstiftelseId "FK to fact_rettsstiftelse"
+        int zk_dokumentId "FK to dim_dokument"
+
+        timestamp oppdateringsdato
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_rettsstiftelse_til_person_encrypted {
+        int rettsstiftelsetilpersonId "PK"
+
+        string rettsstiftelsetilpersonKategori
+
+        int zk_rettsstiftelseId "FK to fact_rettsstiftelse"
+        int zk_personId "FK to dim_fysisk_person_encrypted / dim_juridisk_person"
+
+        int keyId "FK to encryption key table"
+        timestamp oppdateringsdato
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_rettsstiftelse_til_registerenhetsrett_encrypted {
+        int rettsstiftelsetilregisterenhetsrettId "PK"
+
+        string rettsstiftelsetilregisterenhetsrettKategori
+
+        int zk_rettsstiftelseId "FK to fact_rettsstiftelse"
+        int zk_registerenhetsrettId "FK to dim_registerenhetsrett"
+
+        int keyId "FK to encryption key table"
+        timestamp oppdateringsdato
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_rettsstiftelse_til_rettsstiftelse {
+        int rettsstiftelsetilrettsstiftelseId "PK"
+
+        string rettsstiftelsetilrettsstiftelseKategori
+
+        int zk_kilde_rettsstiftelseId "FK to fact_rettsstiftelse"
+        int zk_maal_rettsstiftelseId "FK to fact_rettsstiftelse"
+
+        timestamp oppdateringsdato
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    fact_rettsstiftelse_beloep {
+        int rettsstiftelseBeloepId PK
+
+        int zk_rettsstiftelseId "FK to fact_rettsstiftelse"
+        int zk_valutakodekodeId "FK to dim_valutakodekode"
+
+        string rettsstiftelseBeloepKategori
+
+        int beloepsverdi "Amount value"
+        string beloepstekst "Amount text"
+        
+        timestamp oppdateringsdato "Date updated"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    fact_rettsstiftelse_beloepforperiode {
+        int rettsstiftelseBeloepforperiodeId PK
+
+        int zk_rettsstiftelseId "FK to fact_rettsstiftelse"
+        int zk_valutakodekodeId "FK to dim_valutakodekode"
+        int zk_periodekodeId "FK to dim_periodekode"
+
+        string rettsstiftelseBeloepforperiodeKategori
+
+        int beloepsverdi "Amount value"
+        string beloepstekst "Amount text"
+        
+        timestamp oppdateringsdato "Date updated"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    fact_hefte_i_registerenhetsrettsandel_encrypted {
+        int hefteIRegisterenhetsrettsandelId PK
+
+        int zk_registerenhetsrettsandelId "FK to dim_registerenhetsrettsandel_encrypted"
+        int zk_rettsstiftelseId "FK to dim_rettsstiftelse"
+
+        boolean historisk "Historical flag"
+
+        int teller
+        int nevner
+
+        int keyId "FK to encryption key table"
+        timestamp oppdateringsdato "Date updated"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
 
     %% OVERFØRING
 
@@ -322,7 +491,22 @@ erDiagram
         timestamp to_datetime "End of SCD2-validity for this record"
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
-
+    
+    dim_omsattregisterenhetsrettsandel_encrypted {
+        int omsattRegisterenhetsrettsandelId "PK"
+        
+        %% Fra 'rolle':
+        string omsattRegisterenhetsrettsandelKategori
+        
+        int zk_omsattregisterenhetsrettId "FK to dim_omsattregisterenhetsrett_encrypted"
+        int zk_registerenhetsrettsandelId "FK to fact_registerenhetsrettsandel_encrypted"
+        
+        string keyId FK "FK to encryption key table"
+        timestamp oppdateringsdato "Date updated"
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
 
     %% DOKUMENT
 
@@ -393,24 +577,53 @@ erDiagram
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
 
+
+    dim_adresse_encrypted {
+        int adresseId
+        
+        int zk_landkodekodeid FK "FK to dim_landkodekode"
+        int zk_kommuneid FK "FK to dim_kommune"
+        int zk_matrikkel_adresseId FK "FK to adresse in matrikkel"
+        int zk_matrikkel_bruksenhetId FK "FK to bruksenhet in matrikkel"
+
+        string adresseKategori "Class"
+
+        int bolignummer
+        string adressekode
+        string adressenavn
+        int husnummer
+        string bokstav
+        int gaardsnummer
+        int bruksnummer
+        int festenummer
+        int undernummer
+        string adressetekst
+
+        int keyId "FK to encryption key table"
+        timestamp oppdateringsdato "Date updated"
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
     fact_saksinformasjon_encrypted {
-        int saksinformasjonId PK
+        int saksinformasjonId "PK"
 
         string behandlingsutfall
         string sakstatus
         timestamp mottaksdato
         timestamp foelgebrevsdato
 
-        string keyId FK "FK to encryption key table"
+        string keyId "FK to encryption key table"
         timestamp oppdateringsdato "Date updated"
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
 
     dim_saksinformasjon_encrypted {
-        int saksinformasjonId PK
+        int saksinformasjonId "PK"
         int saksnummer
 
-        string keyId FK "FK to encryption key table"
+        string keyId "FK to encryption key table"
         timestamp oppdateringsdato "Date updated"
         timestamp from_datetime "Start of SCD2-validity for this record"
         timestamp to_datetime "End of SCD2-validity for this record"
@@ -435,34 +648,6 @@ erDiagram
         string postnummer
         string poststed
         string land
-
-        int keyId "FK to encryption key table"
-        timestamp oppdateringsdato "Date updated"
-        timestamp from_datetime "Start of SCD2-validity for this record"
-        timestamp to_datetime "End of SCD2-validity for this record"
-        timestamp zx_ingest_timestamp "Timestamp for data ingest"
-    }
-
-    dim_adresse_encrypted {
-        int adresseId PK
-        
-        int zk_landkodekodeid FK "FK to dim_landkodekode"
-        int zk_kommuneid FK "FK to dim_kommune"
-        int zk_matrikkel_adresseId FK "FK to adresse in matrikkel"
-        int zk_matrikkel_bruksenhetId FK "FK to bruksenhet in matrikkel"
-
-        string adresseKategori "Class"
-
-        int bolignummer
-        string adressekode
-        string adressenavn
-        int husnummer
-        string bokstav
-        int gaardsnummer
-        int bruksnummer
-        int festenummer
-        int undernummer
-        string adressetekst
 
         int keyId "FK to encryption key table"
         timestamp oppdateringsdato "Date updated"
@@ -603,26 +788,6 @@ erDiagram
         timestamp to_datetime "End of SCD2-validity for this record"
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
-
-    %% dim_registerenhettypekode {
-    %%     int registerenhettypekodeId "PK"
-    %%     string registerenhettypekode
-
-    %%     timestamp oppdateringsdato "Date updated"
-    %%     timestamp from_datetime "Start of SCD2-validity for this record"
-    %%     timestamp to_datetime "End of SCD2-validity for this record"
-    %%     timestamp zx_ingest_timestamp "Timestamp for data ingest"
-    %% }
-
-    %% dim_rettsstiftelsestypekode {
-    %%     int rettsstiftelsestypekodeid "PK"
-    %%     string rettsstiftelsestype
-
-    %%     timestamp oppdateringsdato "Date updated"
-    %%     timestamp from_datetime "Start of SCD2-validity for this record"
-    %%     timestamp to_datetime "End of SCD2-validity for this record"
-    %%     timestamp zx_ingest_timestamp "Timestamp for data ingest"
-    %% }
 
     dim_valutakodekode {
         int valutakodekodeid "PK"
