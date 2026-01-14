@@ -216,7 +216,7 @@ Borettslag er ”eit samvirkeføretak som har til føremål å gi andelseigarane
 
 **Description:**
 
-Del av en rett som er etablert i en rettsstiftelse. Del betyr her en delmengde av de Registerenhetsretter og/eller Registerenhetsrettsandeler som rettsstiftelsen gjelder for. På denne måten kan man begrense omfanget. Det er begrensningen som angis. Hvis det ikke er angitt noen begrensning (altså ingen relasjoner til registerenhetsrett eller registerenhetsrettsandel), er ikke omfanget begrenset, med andre ord hele rettsstiftelsen er omfattet.
+Del av en rett som er etablert i en rettsstiftelse. Rettsstiftelsene av kategori "HeftelseIRettihet" og "TvangsforretningIRettighet" hefter i andre rettsstiftelser, og delAvRett angir denne rettsstiftelsen samt eventuelle begrensninger til registerenhetsrett eller registerenhetsrettsandel.
 
 zk_kilde_rettsstiftelseId angir hvilken rettsstiftelsen DelAvRett har opphav i.
 
@@ -244,7 +244,9 @@ Registerenhetsrettsandel som DelAvRett er begrenset til er angitt i tabellen dim
 
 **Description:**
 
-Denne tabellen angir hvilke registerenhetsretter en DelAvRett er begrenset til. zk_delavrettId angir DelAvRett og zk_registerenhetsrettsId angir registerenhetsrett som DelAvRett er begrenset til.
+Denne tabellen angir hvilke registerenhetsretter en rettsstiftelse er begrenset til. Denne tabellen gjelder hvis en rettsstiftelse er begrenset til alle andelene i en registerenhetsrett. Hvis en rettsstiftelse er begrenset til en eller flere registerenhetsrettsandeler, men ikke alle, vil den finnes i dim_delavrett_til_registerenhetsrettsandel_encrypted.
+
+zk_delavrettId angir DelAvRett og zk_registerenhetsrettsId angir registerenhetsrett som DelAvRett er begrenset til. Den korresponderende rettsstiftelsen kan finnes i dim_delavrett.
 
 **Schema:**
 
@@ -265,7 +267,9 @@ Denne tabellen angir hvilke registerenhetsretter en DelAvRett er begrenset til. 
 
 **Description:**
 
-Denne tabellen angir hvilke registerenhetsrettsandeler en DelAvRett er begrenset til. zk_delavrettId angir DelAvRett og zk_registerenhetsrettsandelId angir registerenhetsrettsandel som DelAvRett er begrenset til.
+Denne tabellen angir hvilke registerenhetsrettsandeler en rettsstiftelse er begrenset til. Denne tabellen gjelder når en rettsstiftelse er begrenset til en eller flere andeler av en registerenhetsrett, men ikke samtlige andeler. Hvis en rettsstiftelse er begrenset til en hel registerenhetsrett vil den finnes i dim_delavrett_til_registerenhetsrett_encrypted.
+
+zk_delavrettId angir DelAvRett og zk_registerenhetsrettsandelId angir registerenhetsrettsandel som DelAvRett er begrenset til. Den korresponderende rettsstiftelsen kan finnes i dim_delavrett.
 
 **Schema:**
 
@@ -773,7 +777,7 @@ Denne tabeller angir dokumenter som ankes for rettsstiftelser av kategorien "Ank
 
 Denne tabellen knytter rettsstiftelser, herunder heftelser, til personer.
 
-rettsstiftelseTilPersonKategori angir rollen den aktuelle personen har med hensyn til rettsstiftelsen, for eksempel "saksoeker" eller "rettighetshaver_aktiv". Hver kategori angir en kobling i domenemodellen. Kategorier som med suffix "\_historisk" angir historiske rader.
+rettsstiftelseTilPersonKategori angir rollen den aktuelle personen har med hensyn til rettsstiftelsen, for eksempel "SAKSOEKER" eller "RETTIGHETSHAVER_AKTIV". Hver kategori angir en kobling i domenemodellen. Kategorier som med suffix "\_historisk" angir historiske rader.
 
 zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_personId angir personen, som enten kan være en juridisk person i dim_juridisk_person eller en fysisk person i dim_fysisk_person_encrypted.
 
@@ -797,11 +801,9 @@ zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_personId angir person
 
 **Description:**
 
-Denne tabellen knytter rettsstiftelser til registerenhetsretter for rettsstiftelser (heftelser) som hefter i en registerenhetsrett.
+Denne tabellen knytter rettsstiftelser til registerenhetsretter for rettsstiftelser (heftelser) som hefter i en registerenhetsrett, dvs. alle andelene i en registerenhetsrett. For rettsstiftelser som hefter i en eller flere registerenhetsrettsandeler, men ikke alle, finnes koblingen i fact_hefte_i_registerenhetsrettsandel_encrypted.
 
-For rettsstiftelser som hefter i en _registerenhetsrettsandel_ finnes koblingen i fact_hefte_i_registerenhetsrettsandel_encrypted.
-
-zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId angir registerenhetsretten som rettsstiftelsen hefter i. rettsstiftelseTilRegisterenhetsrettKategori angir kategorien til koblingen. Den er enten "HEFTER_I", "REALKOBLET_TIL" eller "HEFTER_I_HISTORISK". Sistnevnte angir historiske rader.
+zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId angir registerenhetsretten som rettsstiftelsen hefter i. rettsstiftelseTilRegisterenhetsrettKategori angir kategorien til koblingen. Den er enten "HEFTER_I", "HEFTER_I_HISTORISK" eller "REALKOBLET_TIL". "HEFTER_I_HISTORISK" angir historiske rader.
 
 **Schema:**
 
@@ -823,7 +825,7 @@ zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId 
 
 **Description:**
 
-Denne inneholder informasjon om rettsstiftelser som hefter i andre rettsstiftelser.
+Denne inneholder informasjon om rettsstiftelser som hefter i andre rettsstiftelser. Det gjelder rettsstiftelser av kategori "PrioritetsbestemmelseForDokumentnummer", "FremleieAvtale" og "Ombytte".
 
 zk_kilde_rettsstiftelseId angir den heftende rettsstiftelsen og zk_maal_rettsstiftelse angir rettsstiftelsen den hefter i.
 
@@ -952,9 +954,7 @@ Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser so
 
 **Description:**
 
-Denne tabellen knytter rettsstiftelser til registerenhetsrettsandel for rettsstiftelser (heftelser) som hefter i en registerenhetsrettsandel.
-
-For rettsstiftelser som hefter i en _registerenhetsrett_ finnes koblingen i dim_rettsstiftelse_til_registerenhetsrett_encrypted.
+Denne tabellen knytter rettsstiftelser til registerenhetsrettsandel for rettsstiftelser (heftelser) som hefter i en eller flere registerenhetsrettsandel, men ikke alle andelene i en registerenhetsrett. For rettsstiftelser som hefter i en registerenhetsrett, dvs. alle andelene i en registerenhetsrett, finnes koblingen i dim_rettsstiftelse_til_registerenhetsrett_encrypted.
 
 zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettsandelId angir registerenhetsrettsandelen som rettsstiftelsen hefter i.
 
@@ -1158,7 +1158,7 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 
 **Description:**
 
-Denne tabellen inneholder pengebeløp knyttet til en rettsstiftelse/heftelse. Det gjelder rettsstiftelser av kategoriene "Pant", "NotertPant", "VilkaarIFestekontrakt" og "TvangsForretning". For "EierskifteMatrikkelenhet" og lignende se Omsetning.
+Denne tabellen inneholder pengebeløp knyttet til en rettsstiftelse/heftelse. Det gjelder rettsstiftelser av kategoriene "HeftelseIRettighet", "Nedkvittering", "NotertPant", "NotertTvangspant", "NyeVilkaarIFestekontrakt", "Pant", "PrioritetsbestemmelserForDokumentnummer", "PrioritetsbestemmelserForIkkeTinglystDokument", "Tvangsforretning", "TvangsforretningIRettighet" og "VilkaarIFestekontrakt". For "EierskifteMatrikkelenhet" og lignende se Omsetning.
 
 Pengebeløpet er oppgitt som et heltall uten desimaler.
 
@@ -1181,7 +1181,7 @@ Pengebeløpet er oppgitt som et heltall uten desimaler.
 
 **Description:**
 
-Denne tabellen inneholder pengebeløp knyttet til en rettsstiftelse/heftelse som gjelder for en periode. Det gjelder rettsstiftelser av kategoriene "Leieavtale" og "NyeVilkaarILeieavtale". zk_periodekodeid angir perioden beløpet gjelder for, for eksempel om det er et årlig eller månedlig beløp.
+Denne tabellen inneholder pengebeløp knyttet til en rettsstiftelse/heftelse som gjelder for en periode. Det gjelder rettsstiftelser av kategoriene "Fremleieavtale", "Leieavtale" og "NyeVilkaarILeieavtale". zk_periodekodeid angir perioden beløpet gjelder for, for eksempel om det er et årlig eller månedlig beløp.
 
 Pengebeløpet er oppgitt som et heltall uten desimaler.
 
