@@ -1,10 +1,8 @@
-# nonk8s
-apiVersion: "backstage.io/v1alpha1"
-kind: "Component"
+apiVersion: backstage.io/v1alpha1
+kind: Component
 metadata:
-  name: "kv-deltashare-examples"
-  tags: []
+  name: kv-deltashare-examples
 spec:
-  type: "experiment"
-  lifecycle: "experimental"
-  owner: "innsikt"
+  type: job
+  lifecycle: experimental
+  owner: innsikt
