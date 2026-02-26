@@ -1906,7 +1906,7 @@ Tabellen inneholder krypterte fakta om kulturminner som stammer fra MatrikkelAPI
 
 | Column                   | Type                        |
 | ------------------------ | --------------------------- |
-| kulturminnerId           | bigint                      |
+| kulturminneId           | bigint                      |
 | keyId                    | string                      |
 | matrikkelenhetIds        | array<struct<value:bigint>> |
 | oppdateringsdato         | timestamp                   |
@@ -1930,7 +1930,7 @@ Tabellen inneholder krypterte fakta om kulturminner som stammer fra MatrikkelAPI
 ## fact_kulturminner_historical
 
 **Description:**
-Tabellen inneholder fakta om kultummer som stammer fra MatrikkelAPI. Opplysninger om kulturminner kan blant annet gjelde automatisk fredete kulturminner, vedtaksfredete kulturminner og kulturmiljø. Opplysninger om kulturminner vil framkomme som utdrag eller kopling mot Riksantikvarens register over kulturminner, Askeladden. Regler om dette fastsettes i avtale mellom Riksantikvaren og Statens kartverk. Data rensket for duplikater, men inneholder historikk basert på endringslogg fra matrikkelen. Iden for selve objektene vil være kulturminnerId. Fordi dette er en historisk tabell vil flere rader kunne ha samme kulturminnerId, man må da bruke et tidspunkt f.eks bruke oppdateringsdato eller ingest*dato for å få unik rad. Av tekniske årsaker finnes det en egen kolonne som heter key for å skille mellom unike rader, som er en kombinasjon av kulturminnerId og oppdateringsdato på raden. Kolonnene er sortert alfabetisk. Kan benyttes sammen med flere dimensjoner, hvilke dimensjoner dette er kan sees ved å se på kolonner prefiksen med zk*. Tilhørende dimensjon kobles opp ved hjelp av å joine på denne zk\_ kolonnen. Systemkolonner er prefikset med zx\_\_
+Tabellen inneholder fakta om kultummer som stammer fra MatrikkelAPI. Opplysninger om kulturminner kan blant annet gjelde automatisk fredete kulturminner, vedtaksfredete kulturminner og kulturmiljø. Opplysninger om kulturminner vil framkomme som utdrag eller kopling mot Riksantikvarens register over kulturminner, Askeladden. Regler om dette fastsettes i avtale mellom Riksantikvaren og Statens kartverk. Data rensket for duplikater, men inneholder historikk basert på endringslogg fra matrikkelen. Iden for selve objektene vil være kulturminneId. Fordi dette er en historisk tabell vil flere rader kunne ha samme kulturminneId, man må da bruke et tidspunkt f.eks bruke oppdateringsdato eller ingest*dato for å få unik rad. Av tekniske årsaker finnes det en egen kolonne som heter key for å skille mellom unike rader, som er en kombinasjon av kulturminneId og oppdateringsdato på raden. Kolonnene er sortert alfabetisk. Kan benyttes sammen med flere dimensjoner, hvilke dimensjoner dette er kan sees ved å se på kolonner prefiksen med zk*. Tilhørende dimensjon kobles opp ved hjelp av å joine på denne zk\_ kolonnen. Systemkolonner er prefikset med zx\_\_
 
 **Schema:**
 
