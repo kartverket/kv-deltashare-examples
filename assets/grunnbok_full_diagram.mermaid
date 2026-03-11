@@ -35,8 +35,8 @@ erDiagram
     dim_rettsstiftelse_til_person_encrypted }o--o| dim_juridisk_person : zk_personId
     dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
     dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
-    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
-    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
 
     fact_rettsstiftelse_beloep }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
     fact_rettsstiftelse_beloep }|--|| dim_valutakodekode : zk_valutakodekodeId
@@ -66,14 +66,15 @@ erDiagram
 
     fact_dokument ||--|| dim_dokument : dokumentId
     fact_dokument |o--o| fact_dokument : zk_omdokulerttil_dokumentId
-    fact_dokument }o--o| dim_saksinformasjon_encrypted : zk_saksinformasjonId
+    fact_dokument }o--o| dim_saksinformasjon : zk_saksinformasjonId
     fact_dokument }|--|| dim_embetekode : zk_embetekodeId
     fact_dokument }|--|| dim_dokumentstatuskode : zk_dokumentstatusKodeId
     fact_dokument }|--|| dim_valutakodekode : zk_valutakodeKodeId
 
-    fact_saksinformasjon_encrypted ||--|| dim_saksinformasjon_encrypted : saksinformasjonId
+    dim_saksinformasjon }|--|| dim_saksinformasjon_behandlingsutfallkode : zk_saksinformasjonBehandlingsutfallKodeId
+    dim_saksinformasjon }|--|| dim_saksinformasjon_saksstatuskode : zk_saksinformasjonSaksstatusKodeId
     
-    dim_saksperson_encrypted ||--|| fact_saksinformasjon_encrypted : zk_saksinformasjonId
+    dim_saksperson_encrypted ||--|| dim_saksinformasjon : zk_saksinformasjonId
     dim_saksperson_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypeKodeId
 
     fact_omsetning_encrypted ||--|| dim_omsetning_encrypted : omsetningId
@@ -338,7 +339,7 @@ erDiagram
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
 
-    dim_rettsstiftelse_til_rettsstiftelse {
+    dim_rettsstiftelse_til_rettsstiftelse {
         int rettsstiftelsetilrettsstiftelseId "PK"
 
         string rettsstiftelsetilrettsstiftelseKategori
@@ -513,7 +514,7 @@ erDiagram
     fact_dokument {
         int dokumentId FK
 
-        int zk_saksinformasjonId FK "FK to dim_saksinformasjon_encrypted"
+        int zk_saksinformasjonId FK "FK to dim_saksinformasjon"
         int zk_omdokulerttil_dokumentId FK "FK to fact_dokument (self-referencing)"
 
         int zk_embetekodeId FK "FK to dim_embetekode"
@@ -606,24 +607,16 @@ erDiagram
         timestamp zx_ingest_timestamp "Timestamp for data ingest"
     }
 
-    fact_saksinformasjon_encrypted {
+    dim_saksinformasjon {
         int saksinformasjonId "PK"
 
-        string behandlingsutfall
-        string sakstatus
-        timestamp mottaksdato
-        timestamp foelgebrevsdato
-
-        string keyId "FK to encryption key table"
-        timestamp oppdateringsdato "Date updated"
-        timestamp zx_ingest_timestamp "Timestamp for data ingest"
-    }
-
-    dim_saksinformasjon_encrypted {
-        int saksinformasjonId "PK"
         int saksnummer
+        date mottaksdato
+        date foelgebrevsdato
 
-        string keyId "FK to encryption key table"
+        int zk_saksinformasjonSaksstatusKodeId "FK to dim_saksinformasjonSaksstatusKode"
+        int zk_saksinformasjonBehandlingsutfallKodeId "FK to dim_saksinformasjonBehandlingsutfallKode"
+
         timestamp oppdateringsdato "Date updated"
         timestamp from_datetime "Start of SCD2-validity for this record"
         timestamp to_datetime "End of SCD2-validity for this record"
@@ -634,7 +627,7 @@ erDiagram
         %% SakspersonId opprettet som en hash av of saksinformasjonId + rolle:
         int sakspersonId PK "Surrogate key"
 
-        int zk_saksinformasjonId FK "FK to fact_saksinformasjon_encrypted"
+        int zk_saksinformasjonId FK "FK to dim_saksinformasjon"
         int zk_identifikasjonsnummerTypeKodeId "FK to dim_identifikasjonsnummertypekode"
         
         int identifikasjonsnummer "Identification number"
@@ -782,6 +775,26 @@ erDiagram
     dim_registerenhetsrettstypekode {
         int registerenhetsrettstypekodeId "PK"
         string registerenhetsrettstypekode
+
+        timestamp oppdateringsdato "Date updated"
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_saksinformasjon_behandlingsutfallkode {
+        int saksinformasjonBehandlingsutfallKodeId "PK"
+        string saksinformasjonBehandlingsutfall
+
+        timestamp oppdateringsdato "Date updated"
+        timestamp from_datetime "Start of SCD2-validity for this record"
+        timestamp to_datetime "End of SCD2-validity for this record"
+        timestamp zx_ingest_timestamp "Timestamp for data ingest"
+    }
+
+    dim_saksinformasjon_saksstatuskode {
+        int saksinformasjonsaksstatuskodeId "PK"
+        string saksinformasjonsaksstatus
 
         timestamp oppdateringsdato "Date updated"
         timestamp from_datetime "Start of SCD2-validity for this record"
