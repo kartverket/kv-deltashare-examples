@@ -4,7 +4,7 @@
 
 Dimensjonstabeller er implementert med Slowly Changing Dimensions type 2 (SCD2)-historikk. Det innebærer at hver rad har et gyldighetsintervall angitt ved _from_datetime_ og _to_datetime_. Tidligste mulige _from_datetime_ er 2017-04-13.
 
-Kolonner med prefiks zk\_ angir fremmednøkler. For eksempel er _zk_kommuneId_ fremmednøkkel til tabell _dim_kommune_ og kan joines på dens primærnøkkel _kommuneId_. Kolonner med prefiks zx\_ angir interne systemkolonner.
+Kolonner med prefiks zk\_ angir fremmednøkler. For eksempel er _zk_kommuneId_ fremmednøkkel til tabell _dim_kommune_ og kan joines på dens primærnøkkel _kommuneId_. Kolonner med prefiks zx\_ angir interne systemkolonner, for eksempel zx_ingest_timestamp som angir tidspunktet raden ble lastet inn på dataplattformen.
 
 Boolske verdier er oppgitt som et tall, 0 eller 1. De tolkes 0 = False, 1 = True.
 
@@ -55,7 +55,9 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 - [dim_registerenhetsrettstypekode](#dim_registerenhetsrettstypekode)
 - [dim_registerenhettypekode](#dim_registerenhettypekode)
 - [dim_rettsstiftelse](#dim_rettsstiftelse)
-- [dim_saksinformasjon_encrypted](#dim_saksinformasjon_encrypted)
+- [dim_saksinformasjon](#dim_saksinformasjon)
+- [dim_saksinformasjon_behandlingsutfallkode](#dim_saksinformasjon_behandlingsutfallkode)
+- [dim_saksinformasjon_saksstatuskode](#dim_saksinformasjon_saksstatuskode)
 - [dim_saksperson_encrypted](#dim_saksperson_encrypted)
 - [dim_valutakode](#dim_valutakode)
 
@@ -68,7 +70,6 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 - [fact_registerenhet](#fact_registerenhet)
 - [fact_registerenhetsrettsandel_encrypted](#fact_registerenhetsrettsandel_encrypted)
 - [fact_rettsstiftelse](#fact_rettsstiftelse)
-- [fact_saksinformasjon_encrypted](#fact_saksinformasjon_encrypted)
 
 ---
 
@@ -852,29 +853,74 @@ zk_kilde_rettsstiftelseId angir den heftende rettsstiftelsen og zk_maal_rettssti
 
 ---
 
-### dim_saksinformasjon_encrypted
+### dim_saksinformasjon
 
 **Description:**
 
-Denne tabellen inneholder saksinformasjon, som er informasjon om en _sak_. En sak oppretter et dokument, og flere dokumenter kan referere til samme sak.
+Denne tabellen inneholder saksinformasjon, det vil si metadata om en _sak_. En sak oppretter et dokument, og flere dokumenter kan referere til samme sak.
 
 Saksinformasjon og tilhørende dokumenter kan knyttes med fremmednøkkel zk_saksinformasjon i fact_dokument.
 
 Saksinformasjon er knyttet til en til tre _sakspersoner_. Sakspersoner er lagret i dim_saksperson_encrypted, som inneholder fremmednøkkel zk_saksinformasjonId.
 
-Saksinformasjon er delt i dim_saksinformasjon_encrypted og fact_saksinformasjon_encrypted.
+**Schema:**
+
+| Column                                    | Type      | Comment                                                     |
+| ----------------------------------------- | --------- | ----------------------------------------------------------- |
+| saksinformasjonId                         | bigint    | Primærnøkkel                                                |
+| saksnummer                                | int       |
+| zk_saksinformasjonSaksstatusKodeId        | bigint    | Fremmednøkkel til dim_saksinformasjon_saksstatusKode        |
+| zk_saksinformasjonBehandlingstufallkodeId | bigint    | Fremmednøkkel til dim_saksinformasjon_behandlingsutfallKode |
+| mottaksdato                               | date      |                                                             |
+| foelgebrevsdato                           | date      |                                                             |
+| oppdateringsdato                          | timestamp |
+| from_datetime                             | timestamp |
+| to_datetime                               | timestamp |
+| zx_ingest_timestamp                       | timestamp |
+
+---
+
+### dim_saksinformasjon_behandlingsutfallkode
+
+**Description:**
+
+Denne tabellen er en kodelistetabell som inneholder mulige verdier for behandlingsutfall for en sak.
+
+Tabellen brukes av dim_saksinformasjon via fremmednøkkelen zk_saksinformasjonBehandlingsutfallkodeId.
+
+Statusen beskriver hvor i behandlingsprosessen saken befinner seg.
 
 **Schema:**
 
-| Column              | Type      | Comment      |
-| ------------------- | --------- | ------------ |
-| saksinformasjonId   | bigint    | Primærnøkkel |
-| saksnummer          | int       |
-| keyId               | bigint    |
-| oppdateringsdato    | timestamp |
-| from_datetime       | timestamp |
-| to_datetime         | timestamp |
-| zx_ingest_timestamp | timestamp |
+| Column                                 | Type      | Comment                                 |
+| -------------------------------------- | --------- | --------------------------------------- |
+| saksinformasjonBehandlingsutfallKodeId | bigint    | Primærnøkkel                            |
+| saksinformasjonBehandlingsutfall       | string    | Beskrivende tekst for behandlingsutfall |
+| oppdateringsdato                       | timestamp |
+| from_datetime                          | timestamp |
+| to_datetime                            | timestamp |
+
+---
+
+### dim_saksinformasjon_saksstatuskode
+
+**Description:**
+
+Denne tabellen er en kodelistetabell som inneholder mulige statuser en sak kan ha.
+
+Tabellen brukes av dim_saksinformasjon via fremmednøkkelen zk_saksinformasjonSaksstatusKodeId.
+
+Statusen beskriver hvor i behandlingsprosessen saken befinner seg.
+
+**Schema:**
+
+| Column                          | Type      | Comment                          |
+| ------------------------------- | --------- | -------------------------------- |
+| saksinformasjonSaksstatusKodeId | bigint    | Primærnøkkel                     |
+| saksinformasjonSaksstatus       | string    | Beskrivende tekst for saksstatus |
+| oppdateringsdato                | timestamp |
+| from_datetime                   | timestamp |
+| to_datetime                     | timestamp |
 
 ---
 
@@ -890,13 +936,13 @@ En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saks
 
 **Schema:**
 
-| Column                             | Type      | Comment                                                                          |
-| ---------------------------------- | --------- | -------------------------------------------------------------------------------- |
-| sakspersonId                       | bigint    | Primærnøkkel                                                                     |
-| zk_saksinformasjonId               | bigint    | Fremmednøkkel til dim_saksinformasjon_encrypted / fact_saksinformasjon_encrypted |
-| zk_identifikasjonsnummerTypeKodeId | bigint    | Fremmednøkkel til dim_identifikasjonsnummertypekode                              |
+| Column                             | Type      | Comment                                             |
+| ---------------------------------- | --------- | --------------------------------------------------- |
+| sakspersonId                       | bigint    | Primærnøkkel                                        |
+| zk_saksinformasjonId               | bigint    | Fremmednøkkel til dim_saksinformasjon               |
+| zk_identifikasjonsnummerTypeKodeId | bigint    | Fremmednøkkel til dim_identifikasjonsnummertypekode |
 | identifikasjonsnummer              | string    |
-| sakspersonrolle                    | string    | "innsender", "mottaker" eller "fakturamottaker"                                  |
+| sakspersonrolle                    | string    | "innsender", "mottaker" eller "fakturamottaker"     |
 | adresselinje1                      | string    |
 | adresselinje2                      | string    |
 | adresselinje3                      | string    |
@@ -944,7 +990,7 @@ Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser so
 | Column                      | Type      | Comment                                                                                  |
 | --------------------------- | --------- | ---------------------------------------------------------------------------------------- |
 | dokumentId                  | bigint    | Primærnøkkel                                                                             |
-| zk_saksinformasjonId        | bigint    | Fremmenøkkel til dim_saksinformasjon_encrypted / fact_saksinformasjon_encrypted          |
+| zk_saksinformasjonId        | bigint    | Fremmenøkkel til dim_saksinformasjon                                                     |
 | zk_omdokulertTil_dokumentId | bigint    | Fremmednøkkel til dim_dokument / fact_dokument for et dokument som har blitt omdokulert. |
 | zk_embetekodeId             | bigint    | Fremmednøkkel til dim_embetekode                                                         |
 | zk_dokumentstatusKodeId     | bigint    | Fremmednøkkel til dim_dokumentstatuskode                                                 |
@@ -1205,32 +1251,5 @@ Pengebeløpet er oppgitt som et heltall uten desimaler.
 | beloepstekst                           | string    |
 | oppdateringsdato                       | timestamp |
 | zx_ingest_timestamp                    | timestamp |
-
----
-
-### fact_saksinformasjon_encrypted
-
-**Description:**
-
-Denne tabellen inneholder saksinformasjon, som er informasjon om en _sak_. En sak oppretter et dokument, og flere dokumenter kan referere til samme sak.
-
-Saksinformasjon og tilhørende dokumenter kan knyttes med fremmednøkkel zk_saksinformasjon i fact_dokument.
-
-Saksinformasjon er knyttet til en til tre _sakspersoner_. Sakspersoner er lagret i dim_saksperson_encrypted, som inneholder fremmednøkkel zk_saksinformasjonId.
-
-Saksinformasjon er delt i dim_saksinformasjon_encrypted og fact_saksinformasjon_encrypted.
-
-**Schema:**
-
-| Column              | Type      | Comment      |
-| ------------------- | --------- | ------------ |
-| saksinformasjonId   | bigint    | Primærnøkkel |
-| behandlingsutfall   | string    |
-| sakstatus           | string    |
-| mottaksdato         | timestamp |
-| foelgebrevsdato     | timestamp |
-| keyId               | bigint    |
-| oppdateringsdato    | timestamp |
-| zx_ingest_timestamp | timestamp |
 
 ---

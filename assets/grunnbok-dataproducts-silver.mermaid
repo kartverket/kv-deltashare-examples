@@ -35,13 +35,24 @@ erDiagram
     dim_rettsstiftelse_til_person_encrypted }o--o| dim_juridisk_person : zk_personId
     dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
     dim_rettsstiftelse_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
-    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
-    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_kilde_rettsstiftelseId
+    dim_rettsstiftelse_til_rettsstiftelse }o--|| fact_rettsstiftelse : zk_maal_rettsstiftelseId
 
     fact_rettsstiftelse_beloep }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
     fact_rettsstiftelse_beloep }|--|| dim_valutakodekode : zk_valutakodekodeId
     fact_rettsstiftelse_beloepforperiode }o--|| fact_rettsstiftelse : zk_rettsstiftelseId
     fact_rettsstiftelse_beloepforperiode }|--|| dim_valutakodekode : zk_valutakodekodeId
+
+    dim_delavrett ||--|| fact_rettsstiftelse : zk_kilde_rettsstiftelse
+    dim_delavrett ||--|| fact_rettsstiftelse : zk_maal_rettsstiftelse
+
+    dim_delavrett_til_registerenhetsrett_encrypted }o--|| dim_delavrett : zk_delavrettId
+    dim_delavrett_til_registerenhetsrett_encrypted }o--o| dim_registerenhetsrett : zk_registerenhetsrettId
+    dim_delavrett_til_registerenhetsrettsandel_encrypted }o--|| dim_delavrett : zk_delavrettId
+    dim_delavrett_til_registerenhetsrettsandel_encrypted }o--o| fact_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
+
+    fact_hefte_i_registerenhetsrettsandel_encrypted }o--|| dim_registerenhetsrettsandel_encrypted : zk_registerenhetsrettsandelId
+    fact_hefte_i_registerenhetsrettsandel_encrypted }o--|| dim_rettsstiftelse : zk_rettsstiftelseId
 
     fact_overfoering_encrypted }o--|| dim_rettsstiftelse : zk_overfoert_rettstiftelseId
     fact_overfoering_encrypted }o--o| dim_rettsstiftelse : zk_overfoerende_rettstiftelseId
@@ -55,14 +66,15 @@ erDiagram
 
     fact_dokument ||--|| dim_dokument : dokumentId
     fact_dokument |o--o| fact_dokument : zk_omdokulerttil_dokumentId
-    fact_dokument }o--o| dim_saksinformasjon_encrypted : zk_saksinformasjonId
+    fact_dokument }o--o| dim_saksinformasjon : zk_saksinformasjonId
     fact_dokument }|--|| dim_embetekode : zk_embetekodeId
     fact_dokument }|--|| dim_dokumentstatuskode : zk_dokumentstatusKodeId
     fact_dokument }|--|| dim_valutakodekode : zk_valutakodeKodeId
 
-    fact_saksinformasjon_encrypted ||--|| dim_saksinformasjon_encrypted : saksinformasjonId
+    dim_saksinformasjon }|--|| dim_saksinformasjon_behandlingsutfallkode : zk_saksinformasjonBehandlingsutfallKodeId
+    dim_saksinformasjon }|--|| dim_saksinformasjon_saksstatuskode : zk_saksinformasjonSaksstatusKodeId
     
-    dim_saksperson_encrypted ||--|| fact_saksinformasjon_encrypted : zk_saksinformasjonId
+    dim_saksperson_encrypted ||--|| dim_saksinformasjon : zk_saksinformasjonId
     dim_saksperson_encrypted }|--|| dim_identifikasjonsnummertypekode : zk_identifikasjonsnummertypeKodeId
 
     fact_omsetning_encrypted ||--|| dim_omsetning_encrypted : omsetningId
@@ -194,7 +206,7 @@ erDiagram
         int zk_registerenhetsrettId FK
     }
 
-    dim_rettsstiftelse_til_rettsstiftelse {
+    dim_rettsstiftelse_til_rettsstiftelse {
         int rettsstiftelsetilrettsstiftelseId "PK"
 
         int zk_kilde_rettsstiftelseId FK
@@ -311,12 +323,11 @@ erDiagram
         int zk_identifikasjonsnummerTypeKodeId FK
     }
 
-    fact_saksinformasjon_encrypted {
+    dim_saksinformasjon {
         int saksinformasjonId PK
-    }
 
-    dim_saksinformasjon_encrypted {
-        int saksinformasjonId PK
+        int zk_saksinformasjonSaksstatusKodeId FK
+        int zk_saksinformasjonBehandlingsutfallKodeId FK
     }
 
     dim_saksperson_encrypted {
@@ -388,6 +399,14 @@ erDiagram
 
     dim_registerenhetsrettstypekode {
         int registerenhetsrettstypekodeId PK
+    }
+
+    dim_saksinformasjon_behandlingsutfallkode {
+        int saksinformasjonBehandlingsutfallKodeId PK
+    }
+
+    dim_saksinformasjon_saksstatuskode {
+        int saksinformasjonsaksstatuskodeId PK
     }
 
     dim_valutakodekode {
