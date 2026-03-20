@@ -2,7 +2,7 @@
 
 ### Generelt
 
-Dimensjonstabeller er implementert med Slowly Changing Dimensions type 2 (SCD2)-historikk. Det innebærer at hver rad har et gyldighetsintervall angitt ved _from_datetime_ og _to_datetime_. Tidligste mulige _from_datetime_ er 2017-04-13.
+Dimensjonstabeller er implementert med Slowly Changing Dimensions type 2 (SCD2)-historikk. Det innebærer at hver rad har et gyldighetsintervall angitt ved _from_datetime_ og _to_datetime_. Tidligste mulige _from_datetime_ er 2017-04-13. dim_fysisk_person_encrypted har ikke historikk.
 
 Kolonner med prefiks zk\_ angir fremmednøkler. For eksempel er _zk_kommuneId_ fremmednøkkel til tabell _dim_kommune_ og kan joines på dens primærnøkkel _kommuneId_. Kolonner med prefiks zx\_ angir interne systemkolonner, for eksempel zx_ingest_timestamp som angir tidspunktet raden ble lastet inn på dataplattformen.
 
@@ -369,6 +369,8 @@ Dokumenter som tinglyses i dag i fast eiendom har embetenummer 200, i borett 201
 
 Tabellen inneholder alle fysiske personer som er registrert i grunnboksdatabasen. Tabellen inneholder både personer med fødselsnummer og med løpenummer (sistnevne kan være både fysiske og juridiske personer).
 
+Merk, denne dimensjonstabellen har _ikke_ SCD2-historikk.
+
 **Schema:**
 
 | Column                             | Type      | Comment                                             |
@@ -380,8 +382,6 @@ Tabellen inneholder alle fysiske personer som er registrert i grunnboksdatabasen
 | historisk                          | boolean   |
 | keyId                              | bigint    |
 | oppdateringsdato                   | timestamp |
-| from_datetime                      | timestamp |
-| to_datetime                        | timestamp |
 | zx_ingest_timestamp                | timestamp |
 
 ---
