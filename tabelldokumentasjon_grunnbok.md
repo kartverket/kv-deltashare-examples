@@ -37,13 +37,14 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 - [dim_delavrett_til_registerenhetsrett](#dim_delavrett_til_registerenhetsrett)
 - [dim_delavrett_til_registerenhetsrettsandel](#dim_delavrett_til_registerenhetsrettsandel)
 - [dim_dokument](#dim_dokument)
+- [dim_dokavgiftsaarsakkode](#dim_dokumentavgiftsaarsakkode)
 - [dim_dokumentstatuskode](#dim_dokumentstatuskode)
-- [dim_dokavgiftsaarsakkode](#dim_dokavgiftsaarsakkode)
 - [dim_embetekode](#dim_embetekode)
 - [dim_fysisk_person_encrypted](#dim_fysisk_person_encrypted)
 - [dim_identifikasjonsnummertypekode](#dim_identifikasjonsnummertypekode)
 - [dim_juridisk_person](#dim_juridisk_person)
 - [dim_kommune](#dim_kommune)
+- [dim_landkodekode](#dim_landkodekode)
 - [dim_omsetning_encrypted](#dim_omsetning_encrypted)
 - [dim_omsetningstypekode](#dim_omsetningstypekode)
 - [dim_omsattregisterenhetsrett_encrypted](#dim_omsattregisterenhetsrett_encrypted)
@@ -465,6 +466,24 @@ Tabellen inneholder norske kommuner med kommunenummer og navn, både historiske 
 
 ---
 
+### dim_landkodekode
+
+**Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser for landkoder. Landkoder er to bokstaver, for eksempel "NO" for Norge.
+
+**Schema:**
+
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| landkodekodeid   | bigint    | Primærnøkkel |
+| landkode         | string    |
+| oppdateringsdato | timestamp |
+| from_datetime    | timestamp |
+| to_datetime      | timestamp |
+
+---
+
 ### dim_omsetning_encrypted
 
 **Description:**
@@ -494,24 +513,6 @@ Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som kn
 | from_datetime                 | timestamp |
 | to_datetime                   | timestamp |
 | zx_ingest_timestamp           | timestamp |
-
----
-
-### dim_landkodekode
-
-**Description:**
-
-Denne kodelistetabellen inneholder koder og beskrivelser for landkoder. Landkoder er to bokstaver, for eksempel "NO" for Norge.
-
-**Schema:**
-
-| Column           | Type      | Comment      |
-| ---------------- | --------- | ------------ |
-| landkodekodeid   | bigint    | Primærnøkkel |
-| landkode         | string    |
-| oppdateringsdato | timestamp |
-| from_datetime    | timestamp |
-| to_datetime      | timestamp |
 
 ---
 
