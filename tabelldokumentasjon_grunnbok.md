@@ -70,6 +70,8 @@ Alle krypterte verdier blir strings i krypteringsprosessen, og må tolkes av kon
 - [fact_registerenhet](#fact_registerenhet)
 - [fact_registerenhetsrettsandel_encrypted](#fact_registerenhetsrettsandel_encrypted)
 - [fact_rettsstiftelse](#fact_rettsstiftelse)
+- [fact_rettsstiftelse_beloep](#fact_rettsstiftelse_beloep)
+- [fact_rettsstiftelse_beloepforperiode](#fact_rettsstiftelse_beloepforperiode)
 
 ---
 
@@ -117,6 +119,8 @@ Vegadresser og Matrikkeladresser har kilde i matrikkelen. Disse kan knyttes til 
 
 **Description:**
 
+Denne kodelistetabellen inneholder koder og beskrivelser for årsaker til gebyrfritak. Tabellen refereres til fra fact_rettsstiftelse.
+
 **Schema:**
 
 | Column                   | Type      | Comment      |
@@ -132,6 +136,8 @@ Vegadresser og Matrikkeladresser har kilde i matrikkelen. Disse kan knyttes til 
 ### dim_aarsaksparagrafkode
 
 **Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser for årsaksparagrafen. Tabellen refereres til fra fact_rettsstiftelse.
 
 **Schema:**
 
@@ -149,6 +155,8 @@ Vegadresser og Matrikkeladresser har kilde i matrikkelen. Disse kan knyttes til 
 
 **Description:**
 
+Denne kodelistetabellen inneholder koder og beskrivelser for typen avgjørelse en anke gjelder, for eksempel "Anke over nektig". Tabellen refereres til fra fact_rettsstiftelse.
+
 **Schema:**
 
 | Column           | Type      | Comment      |
@@ -164,6 +172,8 @@ Vegadresser og Matrikkeladresser har kilde i matrikkelen. Disse kan knyttes til 
 ### dim_boligtypekode
 
 **Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser over boligtyper, altså hva en registerenhetsretts eventuelle bebyggelse kan anvendes til. Tabellen er referert til fra dim_omsattregisterenhetsrett_encrypted.
 
 **Schema:**
 
@@ -200,6 +210,8 @@ Borettslag er ”eit samvirkeføretak som har til føremål å gi andelseigarane
 ### dim_brukstypekode
 
 **Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser over brukstyper, altså hva en registerenhetsrett kan anvendes til. Tabellen er referert til fra dim_omsattregisterenhetsrett_encrypted.
 
 **Schema:**
 
@@ -291,7 +303,11 @@ zk_delavrettId angir DelAvRett og zk_registerenhetsrettsandelId angir registeren
 
 **Description:**
 
-Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en _rettsstiftelse_ tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder. zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskode for å angi dokumentets status (f.eks. "tinglyst"). Dokument er delt i dim_dokument og fact_dokument, begge med primary key dokumentId.
+Denne tabellen inneholder dimensjonsdata om dokumenter. Data om dokumenter er delt i en dimensjontabell (dim_dokument) og en faktatabell (fact_dokument).
+
+Det er dokumenter som tinglyses, og et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en rettsstiftelse tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder.
+
+zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskode for å angi dokumentets status (f.eks. "tinglyst").
 
 **Schema:**
 
@@ -309,27 +325,11 @@ Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser so
 
 ---
 
-### dim_dokumentstatuskode
-
-**Description:**
-
-Status til et dokument. For eksempel "Tinglyst", "Under konferering" eller "Nektet".
-
-**Schema:**
-
-| Column               | Type      | Comment      |
-| -------------------- | --------- | ------------ |
-| dokumentstatuskodeid | bigint    | Primærnøkkel |
-| dokumentstatus       | string    |
-| oppdateringsdato     | timestamp |
-| from_datetime        | timestamp |
-| to_datetime          | timestamp |
-
----
-
 ### dim_dokumentavgiftsaarsakkode
 
 **Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser over årsaker til at dokumentavgiften er beregnet på den aktuelle måten, enten dette er hovedregelen om full dokumentavgift, nedsatt dokumentavgift, eller fritak fra dokumentavgift. Tabellen refereres til fra fact_omsetning_encrypted.
 
 **Schema:**
 
@@ -343,11 +343,29 @@ Status til et dokument. For eksempel "Tinglyst", "Under konferering" eller "Nekt
 
 ---
 
+### dim_dokumentstatuskode
+
+**Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser over offisielle dokumentstatuser tinglysingsdokumentene kan ha. Tabellen refereres til fra dim_dokument.
+
+**Schema:**
+
+| Column               | Type      | Comment      |
+| -------------------- | --------- | ------------ |
+| dokumentstatuskodeid | bigint    | Primærnøkkel |
+| dokumentstatus       | string    |
+| oppdateringsdato     | timestamp |
+| from_datetime        | timestamp |
+| to_datetime          | timestamp |
+
+---
+
 ### dim_embetekode
 
 **Description:**
 
-Liste over alle embetenummer i systemet. Tinglysingen lå tidligere ved domstolene. Disse er/var organisert i ulike embeter, hvor flere kommuner kunne sogne til et embete. Flere dokumenter kan derfor ha samme årstall og dokumentnummer, men er altså ført i ulike embeter. Dette er grunnen til at embete må med som identifikasjon av dokumentet.
+Denne kodelistetabellen inneholder koder og beskrivelser over alle embetenummer i kildesystemet. Tinglysingen lå tidligere ved domstolene. Disse er/var organisert i ulike embeter, hvor flere kommuner kunne sogne til et embete. Flere dokumenter kan derfor ha samme årstall og dokumentnummer, men er altså ført i ulike embeter. Dette er grunnen til at embete må med som identifikasjon av dokumentet.
 
 Dokumenter som tinglyses i dag i fast eiendom har embetenummer 200, i borett 201.
 
@@ -390,7 +408,7 @@ Tabellen inneholder alle fysiske personer som er registrert i grunnboksdatabasen
 
 **Description:**
 
-Type for et identifikasjonsnummer. Enten fødselsnummer, organisasjonsnummer eller løpenummer.
+Denne kodelistetabellen inneholder koder og beskrivelser for identifikasjonsnummertyper, som kan være fødselsnummer (herunder også D-nummer), organisasjonsnummer eller løpenummer. Løpenummer er internt opprettede identifikasjonsnummer der fødselsnummer eller organisasjonsnummer mangler, og kan være tilknyttet til fysiske personer eller organisasjoner.
 
 **Schema:**
 
@@ -479,11 +497,29 @@ Beløp knyttet til en omsetning ligger i fact_omsetning_beloep_encrypted, som kn
 
 ---
 
+### dim_landkodekode
+
+**Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser for landkoder. Landkoder er to bokstaver, for eksempel "NO" for Norge.
+
+**Schema:**
+
+| Column           | Type      | Comment      |
+| ---------------- | --------- | ------------ |
+| landkodekodeid   | bigint    | Primærnøkkel |
+| landkode         | string    |
+| oppdateringsdato | timestamp |
+| from_datetime    | timestamp |
+| to_datetime      | timestamp |
+
+---
+
 ### dim_omsetningstypekode
 
 **Description:**
 
-Tabellen inneholder liste over omsetningstyper, altså nærmere om hva som er årsaken til at registerenhetsretten skifter hjemmelshaver.
+Denne kodelistetabellen inneholder koder og beskrivelser over omsetningstyper, altså nærmere hva som er årsaken til at registerenhetsretten skifter hjemmelshaver. Tabellen refereres til fra fact_omsetning_encrypted.
 
 **Schema:**
 
@@ -535,8 +571,8 @@ zk_registerenhetsrettsandelId angir den aktuelle registerenhetsrettsandelen.
 **Schema:**
 
 | Column                                 | Type      | Comment                                                  |
-| -------------------------------------- | --------- | -------------------------------------------------------- | --- |
-| omsattRegisterenhetsrettsandelId       | bigint    | Primærnøkkel                                             |     |
+| -------------------------------------- | --------- | -------------------------------------------------------- |
+| omsattRegisterenhetsrettsandelId       | bigint    | Primærnøkkel                                             |
 | zk_omsatteregisterenhetsrettsId        | bigint    | Fremmednøkkel til dim_omsattregisterenhetsrett_encrypted |
 | omsattRegisterenhetsrettsandelKategori | string    |
 | keyId                                  | bigint    |
@@ -576,6 +612,8 @@ For hver oppføring vil ENTEN zk_fra_registerenhetsrettId og zk_til_registerenhe
 ### dim_periodekode
 
 **Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser over periodetyper. Dette er enten måned, år eller blank.
 
 **Schema:**
 
@@ -675,6 +713,8 @@ Registerenhetsrettsandel er delt i dim_registerenhetsrettsandel og fact_register
 
 ### dim_registerenhetsrettstypekode
 
+Denne kodelistetabellen inneholder koder og beskrivelser over ulike typer registerenhetsretter. Det kan være enten eiendomsrett, festerett, framfesterett 1-3 eller borett iht. avtale inngått etter bestemmelsen i borettslagsloven § 2-13 (B).
+
 **Description:**
 
 **Schema:**
@@ -692,6 +732,8 @@ Registerenhetsrettsandel er delt i dim_registerenhetsrettsandel og fact_register
 ### dim_registerenhettypekode
 
 **Description:**
+
+Denne kodelistetabellen inneholder koder og beskrivelser over registerenhettyper, som kan være matrikkelenhet, festegrunn, seksjon eller borettslagsandel.
 
 **Schema:**
 
@@ -833,7 +875,7 @@ zk_rettsstiftelseId angir den aktuelle rettsstiftelsen. zk_registerenhetsrettId 
 
 **Description:**
 
-Denne inneholder informasjon om rettsstiftelser som hefter i andre rettsstiftelser. Det gjelder rettsstiftelser av kategori "PrioritetsbestemmelseForDokumentnummer", "FremleieAvtale" og "Ombytte".
+Denne tabellen inneholder informasjon om rettsstiftelser som hefter i andre rettsstiftelser. Det gjelder rettsstiftelser av kategori "PrioritetsbestemmelseForDokumentnummer", "FremleieAvtale" og "Ombytte".
 
 zk_kilde_rettsstiftelseId angir den heftende rettsstiftelsen og zk_maal_rettsstiftelse angir rettsstiftelsen den hefter i.
 
@@ -884,11 +926,7 @@ Saksinformasjon er knyttet til en til tre _sakspersoner_. Sakspersoner er lagret
 
 **Description:**
 
-Denne tabellen er en kodelistetabell som inneholder mulige verdier for behandlingsutfall for en sak.
-
-Tabellen brukes av dim_saksinformasjon via fremmednøkkelen zk_saksinformasjonBehandlingsutfallkodeId.
-
-Statusen beskriver hvor i behandlingsprosessen saken befinner seg.
+Denne kodelistetabellen inneholder koder og beskrivelser over behandlingsutfall for en sak. Utfallet kan enten være nektet, avvist, tinglyst eller uavklart.
 
 **Schema:**
 
@@ -906,11 +944,7 @@ Statusen beskriver hvor i behandlingsprosessen saken befinner seg.
 
 **Description:**
 
-Denne tabellen er en kodelistetabell som inneholder mulige statuser en sak kan ha.
-
-Tabellen brukes av dim_saksinformasjon via fremmednøkkelen zk_saksinformasjonSaksstatusKodeId.
-
-Statusen beskriver hvor i behandlingsprosessen saken befinner seg.
+Denne kodelistetabellen inneholder koder og beskrivelser over saksstatusen til en sak, altså hvor i behandlingsprosessen saken befinner seg. Saksstatus kan være utkast, klar_for_mottak, under_behandling, klar_for_avvisning eller avsluttet.
 
 **Schema:**
 
@@ -932,7 +966,7 @@ Denne tabellen inneholder informasjon om sakspersoner. Personene kan både være
 
 Tabellen inneholder informasjon om personen slik den var da saken ble registrert og blir ikke oppdatert siden. Det betyr at for eksempel hvis en person har endret identifikasjonsnummer (f.eks. gått fra D-nummer til fødselsnummer) kan vedkommende ikke knyttes på tvers av dim_saksperson_encrypted og dim_fysisk_person_encrypted, siden kun sistnevnte vil bli oppdatert.
 
-En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saksinformasjon kan kun ha opptil én saksperson av hver sakspersonrolle: "innsender", "mottaker" og "fakturamottaker".
+En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En sak kan ha opptil én saksperson av hver sakspersonrolle: "innsender", "mottaker" og "fakturamottaker".
 
 **Schema:**
 
@@ -963,6 +997,8 @@ En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saks
 
 **Description:**
 
+Denne kodelistetabellen inneholder koder og beskrivelser over valutakoder.
+
 **Schema:**
 
 | Column           | Type      | Comment      |
@@ -983,7 +1019,11 @@ En oppføring i saksinformasjon har en til tre tilhørende sakspersoner. En saks
 
 **Description:**
 
-Det er dokumenter som tinglyses. Et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en _rettsstiftelse_ tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder. zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskode for å angi dokumentets status (f.eks. "tinglyst"). Dokument er delt i dim_dokument og fact_dokument, begge med primary key dokumentId.
+Denne tabellen inneholder data om dokumenter. Data om dokumenter er delt i en dimensjontabell (dim_dokument) og en faktatabell (fact_dokument).
+
+Det er dokumenter som tinglyses, og et dokument kan inneholde flere bestemmelser som skal tinglyses. Hver slik bestemmelse registreres inn som en rettsstiftelse tilhørende dokumentet. En rettsstiftelse har altså hverken selvstendig dato eller tinglyststatus, det er dokumentets dato og status som gjelder.
+
+zk_dokumentId i fact_rettsstiftelse angir rettsstiftelsens dokument. registreringstidspunkt i fact_dokument angir dokumentets dato. zk_dokumentstatusKodeId i fact_dokument knyttes til dim_dokumentstatuskode for å angi dokumentets status (f.eks. "tinglyst").
 
 **Schema:**
 
