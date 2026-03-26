@@ -799,7 +799,7 @@ Rettsstiftelser er delt i dim_rettsstiftelse og fact_rettsstiftelse. Begge har p
 
 **Description:**
 
-Denne tabeller angir dokumenter som ankes for rettsstiftelser av kategorien "Anke". zk_rettsstiftelseId angir rettsstiftelsen og zk_dokumentId angir dokumentet som ankes.
+Denne tabellen knytter rettsstiftelser, herunder heftelser, til dokumenter.
 
 **Schema:**
 
