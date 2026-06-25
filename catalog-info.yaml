@@ -3,6 +3,6 @@ kind: Component
 metadata:
   name: kv-deltashare-examples
 spec:
-  type: job
+  type: documentation
   lifecycle: experimental
   owner: delta
