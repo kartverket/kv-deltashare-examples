@@ -1,6 +1,3 @@
-import os
-import json
-import subprocess
 import delta_sharing
 
 SOURCE_PATH = "config.share"
