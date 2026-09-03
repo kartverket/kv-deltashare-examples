@@ -4,5 +4,5 @@ metadata:
   name: kv-deltashare-examples
 spec:
   type: documentation
-  lifecycle: experimental
+  lifecycle: development
   owner: delta

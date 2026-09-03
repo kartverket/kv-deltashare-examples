@@ -1,8 +1,0 @@
-{
-    "scope": "xxx:xxx:xxxx",
-    "client_id": "xxxxx-xxxx-xxxx-xxxx-xxxxxxx",
-    "kid": "xxxxxxx",
-    "certname": "certs/mp-key.pem",
-    "audience": "https://skyporten.kartverk.no",
-    "url": "https://sky.maskinporten.no/token"
-}
