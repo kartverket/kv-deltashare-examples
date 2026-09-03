@@ -29,7 +29,7 @@ Du trenger å opprette en Maskinporten-klient og hente nødvendige verdier som s
 
 ### Hent ut share-data
 
-Før du kjører notebooken, anbefales det å sette opp et virtuelt miljø for å isolere avhengigheter. Fra rotmappen i prosjektet kjører man:
+Før du kjører eksemplet (se `example.py`), anbefales det å sette opp et virtuelt miljø for å isolere avhengigheter. Fra rotmappen i prosjektet kjører man:
 
 ```
 python3 -m venv venv
