@@ -2,7 +2,7 @@
 
 Dette er et eksempelrepo for uthenting av data gjennom delta share sikret med Maskinporten for virksomheter. 
 
-Dersom du har vært med i uttesting av dette i pilotperioden kan du finne dokumetasjonen derfra på taggen [pilot](https://github.com/kv-deltashare-examples/tags/pilot)
+Dersom du har vært med i uttesting av dette i pilotperioden kan du finne dokumentasjonen derfra på taggen [pilot](/tags/pilot)
 
 ## Flytdiagram
 
