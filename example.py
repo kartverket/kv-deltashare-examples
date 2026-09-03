@@ -9,7 +9,7 @@ try:
 except Exception as e:
     print(e)
     print("Sharen har ikke tilgang til noen tabeller")
-    exit(1)
+    raise SystemExit(1)
 
 
 for table in tables:
