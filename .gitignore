@@ -1,10 +1,4 @@
-/secrets
-tmp_maskinporten_token.txt
-credentials*.json
 .DS_Store
-maskinporten-token-generation/configs/*.json
-*config.json
-authentication.json
 .idea
 *.log
 .ipynb_checkpoints
