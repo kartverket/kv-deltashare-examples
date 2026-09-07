@@ -1,8 +1,9 @@
 .DS_Store
-.idea
+.idea/
+.venv/
 *.log
 .ipynb_checkpoints
 *.pem
-*.share
-__pycache__
-*.pycskyporten-deltashare.ipynb
+__pycache__/
+*.py[cod]
+*.egg-info/

@@ -1,0 +1,20 @@
+[project]
+name = "examples"
+version = "0.1.0"
+description = "Minimal Delta Sharing example with Skyporten OIDC"
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "argparse>=1.4.0",
+    "delta-sharing>=1.4.1",
+]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[tool.uv]
+python-preference = "only-managed"
