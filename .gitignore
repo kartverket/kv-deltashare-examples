@@ -4,6 +4,7 @@
 *.log
 .ipynb_checkpoints
 *.pem
+*.share
 __pycache__/
 *.py[cod]
 *.egg-info/
