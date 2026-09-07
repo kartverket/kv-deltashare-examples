@@ -1,0 +1,17 @@
+{
+  "shareCredentialsVersion": 2,
+  "type": "oauth_jwt_bearer_private_key_jwt",
+  "endpoint": "URL_MOTTATT_FRA_KARTVERKET",
+  "auth": {
+    "tokenEndpoint": "https://sky.maskinporten.no/token",
+    "clientId": "<SETT_INN_CLIENT_ID>",
+    "issuer": "https://sky.maskinporten.no",
+    "audience": "https://kartverket.no",
+    "scope": "kartverk:matrikkel.innsynmedfnr",
+    "privateKey": {
+      "privateKeyFile": "<PATH_TO_PEM-FILE>",
+      "keyId": "<SETT_INN_KEY_ID>",
+      "algorithm": "RS256"
+    }
+  }
+}
