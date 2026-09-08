@@ -1,0 +1,17 @@
+{
+  "shareCredentialsVersion": 2,
+  "type": "oauth_jwt_bearer_private_key_jwt",
+  "endpoint": "[ENDPOINT_URL_FROM_KARTVERKET]",
+  "auth": {
+    "tokenEndpoint": "https://test.sky.maskinporten.no/token",
+    "clientId": "[MASKINPORTEN_CLIENT_ID]",
+    "issuer": "https://test.sky.maskinporten.no",
+    "audience": "https://kartverket.no",
+    "scope": "[SCOPE_FROM_KARTVERKET]",
+    "privateKey": {
+      "privateKeyFile": "keys/private-key.pem",
+      "keyId": "[MASKINPORTEN_KEY_ID]",
+      "algorithm": "RS256"
+    }
+  }
+}

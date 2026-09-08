@@ -1,0 +1,10 @@
+sequenceDiagram
+    autonumber
+    participant Consumer as Konsument
+    participant Skyporten
+    participant Databricks
+
+    Consumer->>Skyporten: Signert JWT-grant
+    Skyporten-->>Consumer: Tilgangstoken
+    Consumer->>Databricks: Delta Sharing-forespørsel med token
+    Databricks-->>Consumer: Delte tabeller eller data
