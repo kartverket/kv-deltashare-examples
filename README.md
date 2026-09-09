@@ -15,11 +15,13 @@ Autentiseringen fungerer slik: Delta Sharing-klienten din signerer en JWT med en
 
 ### Før du begynner
 
-Kontakt post@kartverket.no for å be om avklaring rundt tilgang. Du vil motta:
+Kontakt Kundesenteret for å be om avklaring rundt tilgang. Dette kan du gjøre her:
+https://www.kartverket.no/om-kartverket/kontakt-oss/kontaktskjema
 
-- **Portal-link** til Databricks (som du åpner i nettleser og laster ned `config.share` fra), eller **`endpoint`-URL** direkte.
+Du vil motta:
+
+- **`endpoint`-URL** som du må lime inn til config-filen
 - **`scope`** — Maskinporten-scopet knyttet til dataproduktet (f.eks. `kartverk:matrikkel.innsynmedfnr`).
-- **`audience`** — mottaker JWT-en skal utstedes til.
 
 Kartverket sørger for at scopet er delegert til virksomhetens organisasjonsnummer i Maskinporten. Test- og prod-miljøet er atskilte: du får én recipient-URL per miljø, og må opprette klient i tilsvarende Maskinporten-miljø.
 
@@ -27,7 +29,7 @@ Verdiene du samler inn ender i én fil, `config/oauth_config.share`:
 
 | Verdi | Kommer fra | Steg |
 |-------|------------|------|
-| `endpoint` | Kartverket (portal-link eller direkte URL) | Steg 4 |
+| `endpoint` | Kartverket (Direkte URL) | Steg 4 |
 | `scope` | Kartverket | Steg 4 |
 | `clientId` | Maskinporten (Selvbetjening) | Steg 2 |
 | `keyId` | Maskinporten (Selvbetjening) | Steg 3 |
@@ -44,7 +46,7 @@ Verdiene du samler inn ender i én fil, `config/oauth_config.share`:
 
 ## Kom i gang
 
-### 1. Opprett nøkkelpar
+### A. Opprett nøkkelpar
 
 Du trenger et RSA-nøkkelpar: en **privat nøkkel** som blir liggende lokalt og signerer token, og en **offentlig nøkkel** som du senere laster opp i Maskinporten (steg 3). Den private nøkkelen skal aldri deles eller committes.
 
@@ -58,7 +60,7 @@ openssl rsa -in keys/private-key.pem -pubout -out keys/public-key.pem
 
 Resultat: to filer i `keys/`. `public-key.pem` bruker du i steg 3, `private-key.pem` refereres fra profilen i steg 4.
 
-### 2. Opprett Maskinporten-klient
+### B. Opprett Maskinporten-klient
 
 Kort versjon:
 Du er nødt til å opprette en klient i Maskinporten, som du knytter til motatt scope fra oss, og legger til din offentlig nøkkel. Du vil motta en klient-ID og nøkkel-ID som du må bruke i Delta Sharing-profilen.
@@ -70,7 +72,7 @@ Detaljert oppsett *(skjermbildene under er fra `test.samarbeid.digdir.no` — pr
 ![Fyll ut klient og velg scope](assets/klient-oppsett.png)
 ![Client ID](assets/client-id.png)
 
-### 3. Registrer offentlig nøkkel
+### C. Registrer offentlig nøkkel
 
 På klienten, velg **Nøkler** og legg til en ny nøkkel. Lim inn innholdet i
 `keys/public-key.pem`, lagre og noter nøkkelens `keyId`.
@@ -79,7 +81,7 @@ På klienten, velg **Nøkler** og legg til en ny nøkkel. Lim inn innholdet i
 ![Lim inn offentlig nøkkel](assets/public-key.png)
 ![Key ID](assets/key-id.png)
 
-### 4. Opprett Delta Sharing-profil
+### D. Opprett Delta Sharing-profil
 
 Nå samler du alle verdiene i konfigfila som Delta Sharing-klienten leser.
 
@@ -89,11 +91,9 @@ Fyll inn feltene:
 
 - `endpoint` — recipient-URL fra Kartverket. Se boks under.
 - `scope` — scopet du mottok fra Kartverket.
-- `audience` — mottakeren i JWT-en, oppgitt av Kartverket.
 - `clientId` — fra Maskinporten (steg 2).
 - `keyId` — fra Maskinporten (steg 3).
 - `privateKeyFile` — sti til `keys/private-key.pem` fra steg 1.
-- `tokenEndpoint` / `issuer` — `https://sky.maskinporten.no(/token)` for prod, `https://test.sky.maskinporten.no(/token)` for test.
 
 > **Slik henter du `endpoint`:** Kartverket sender ofte en Databricks-portal-link på formen:
 >
@@ -101,7 +101,6 @@ Fyll inn feltene:
 > https://europe-west1.gcp.databricks.com/delta-sharing/oidc-profile-generation?metastoreId=...&recipientId=...&policyId=...
 > ```
 >
-> Dette er *ikke* endpoint-URL-en. Åpne linken i nettleseren, last ned `config.share`-fila den genererer, og bruk `endpoint`-verdien derfra i din egen profil.
 
 Profilen skal se slik ut:
 
@@ -125,18 +124,18 @@ Profilen skal se slik ut:
 }
 ```
 
-### 5. Installer avhengigheter og hent ut share data
+### E. Installer avhengigheter og hent ut share data
 
 Velg **én** av metodene under. Du trenger bare gjøre dette én gang.
 
-#### Alternativ A: `uv` (anbefalt)
+#### Alternativ 1: `uv` (anbefalt)
 
 ```bash
 uv sync
 uv run main.py
 ```
 
-#### Alternativ B: Python venv (macOS / Linux)
+#### Alternativ 2: Python venv (macOS / Linux)
 
 ```bash
 python3 -m venv .venv
@@ -145,7 +144,7 @@ python -m pip install .
 python main.py
 ```
 
-#### Alternativ C: Python venv (Windows PowerShell)
+#### Alternativ 3: Python venv (Windows PowerShell)
 
 ```powershell
 py -3 -m venv .venv
