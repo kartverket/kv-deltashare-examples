@@ -11,7 +11,7 @@ For å hente data trenger du:
 1. **Avtale med Kartverket** om tilgang til dataproduktet.
 2. **En Maskinporten-klient** som beviser hvem du (virksomheten) er.
 
-Autentiseringen fungerer slik: Delta Sharing-klienten din signerer en JWT med en **privat nøkkel** som bare ligger på din maskin. Maskinporten verifiserer signaturen med den tilhørende **offentlige nøkkelen** du har lastet opp hos dem, og utsteder et access-token som Kartverket godtar.
+Autentiseringen fungerer slik: Delta Sharing-klienten din signerer en JWT med en **privat nøkkel** som bare ligger på din maskin. Maskinporten tilgjengeliggjøre den **offentlige nøkkelen** du har lastet opp hos dem, og utsteder et access-token som Kartverket igjen kan validere.
 
 ### Før du begynner
 
