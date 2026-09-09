@@ -98,7 +98,7 @@ Fyll inn feltene:
 > **Slik henter du `endpoint`:** Kartverket sender ofte en Databricks-portal-link på formen:
 >
 > ```
-> https://<region>.gcp.databricks.com/api/2.0/delta-sharing/metastores/<metastore-id>/recipient/<recipient-id>
+> https://<region>.gcp.databricks.com/api/2.0/delta-sharing/metastores/<metastore-id>/recipients/<recipient-id>
 > ```
 >
 
