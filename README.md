@@ -218,3 +218,8 @@ Vi oppdaterer dataene en gang i døgnet pt (oppdateringsvindu = 24 timer). For m
 ### Versjonering
 
 Målet er å holde dataproduktene stabile. Generelt må konsumenter forvente at nye kolonner vil kunne legges til i eksisterende dataprodukter uten varsling. Dette må håndteres av nedstrømskonsumenter.
+
+### Referansedokumentasjon
+
+- [Digdir — Maskinporten-guide for API-konsument](https://docs.digdir.no/docs/Maskinporten/maskinporten_guide_apikonsument) — offisiell steg-for-steg-guide fra Digdir for hvordan man setter opp en Maskinporten-klient, registrerer nøkler og henter access-token.
+- [Altinn Studio — Kom i gang med Maskinporten-klient](https://docs.altinn.studio/nb/authorization/getting-started/maskinportenclient/) — praktisk innføring i Maskinporten-klient med skjermbilder, nyttig som supplement til Digdir sin dokumentasjon.
