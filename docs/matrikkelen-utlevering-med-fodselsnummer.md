@@ -1,6 +1,6 @@
 # Tabelldokumentasjon
 
-_Generert 2026-09-25T09:57:26+00:00_
+_Generert 2026-10-13T13:39:00+00:00_
 
 ## Tabeller
 
@@ -10,22 +10,39 @@ _Generert 2026-09-25T09:57:26+00:00_
 - `code_anleggstypekode_v1`
 - `code_annenmatrikkelenhetskode_v1`
 - `code_arealkildekode_v1`
+- `code_arsaktilforingkode_v1`
 - `code_atkomsttypekode_v1`
+- `code_avlopskode_v1`
 - `code_bruksenhetstypekode_v1`
+- `code_bygningsendringskode_v1`
+- `code_bygningsstatuskode_v1`
+- `code_bygningstypekode_v1`
+- `code_energikildekode_v1`
 - `code_etasjeplankode_v1`
 - `code_formalseksjonkode_v1`
 - `code_generellkretstypekode_v1`
 - `code_kjokkentilgangkode_v1`
 - `code_kommunalkretstypekode_v1`
+- `code_koordinatkvalitetkode_v1`
 - `code_koordinatsystemkode_v1`
+- `code_malemetodekode_v1`
+- `code_naringsgruppekode_v1`
+- `code_opprinnelseskode_v1`
+- `code_oppvarmingskode_v1`
+- `code_vannforsyningskode_v1`
 - `dim_adresse_v1`
 - `dim_atkomst_v1`
 - `dim_bruksenhet_v1`
+- `dim_bygning_v1`
+- `dim_bygningsendring_v1`
+- `dim_etasje_v1`
 - `dim_fylke_v1`
 - `dim_kommune_v1`
 - `dim_krets_v1`
 - `dim_matrikkelenhet_v1`
 - `dim_veg_v1`
+- `fact_bygning_statushistorikk_v1`
+- `fact_bygningsendring_statushistorikk_v1`
 # `bridge_adresse_krets_v1`
 
 Nåtidskoblinger mellom adresser og kretser. Én rad per adresse og krets.
@@ -174,6 +191,31 @@ delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
+# `code_arsaktilforingkode_v1`
+
+Årsaker til føring av bygningsstatus.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
 # `code_atkomsttypekode_v1`
 
 Type atkomst, for eksempel sommer-, vinter-, nødetat- eller øyatkomst.
@@ -199,9 +241,135 @@ delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
+# `code_avlopskode_v1`
+
+Avløpsordninger som bygg benytter.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
 # `code_bruksenhetstypekode_v1`
 
 Typer bruksenheter i en bygning, for eksempel bolig, fritidsbolig og ikke godkjent bolig.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_bygningsendringskode_v1`
+
+Hvordan en bygningsendring er bygget i forhold til hovedbygningen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_bygningsstatuskode_v1`
+
+Gjeldende og historiske statuser for bygg, med ordnede lovlige årsaker til føring.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `lovlige_arsaker_til_foring_ids` | array<bigint> | Liste av lovlige årsaker for føring som bygningstatuskoden kan ha. Rekkefølgen er vesentlig. Om systemet skal velge skal første årsak benyttes. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_bygningstypekode_v1`
+
+Hva en bygning er brukt til.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_energikildekode_v1`
+
+Energikilder som et bygg baserer seg på.
 
 ## Kolonner
 
@@ -350,6 +518,31 @@ delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
+# `code_koordinatkvalitetkode_v1`
+
+Kvalitet for koordinater overført fra GAB inntil koordinatene er verifisert eller avkreftet.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
 # `code_koordinatsystemkode_v1`
 
 Koordinatsystem som angir geografisk koordinatsystem eller kartplan, sone og akse. Inneholder SOSI- og EPSG-kode.
@@ -364,6 +557,132 @@ Koordinatsystem som angir geografisk koordinatsystem eller kartplan, sone og aks
 | `navn_nynorsk` | string | Navn på nynorsk. |
 | `sosi_kode` | int | SOSI-kode for koordinatsystemet. |
 | `epsg_kode` | int | EPSG-kode for koordinatsystemet. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_malemetodekode_v1`
+
+Metoden som ligger til grunn for registrering av en posisjon. Se Geonorge SOSI-kodeliste.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `sosi_kode` | int | SOSI-kode for målemetoden. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_naringsgruppekode_v1`
+
+Næringsgruppen som opptar størst andel av samlet areal i et bygg.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_opprinnelseskode_v1`
+
+Hvordan et bygg opprinnelig ble registrert.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_oppvarmingskode_v1`
+
+Fyringssystem som utgjør hovedoppvarmingen i et bygg.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_vannforsyningskode_v1`
+
+Typer vannforsyning for bygg.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
 
 ## Egenskaper
 
@@ -470,6 +789,83 @@ Bruksenheter i matrikkelen med siste autoritative bruksenhetsnummer — nåtidsb
 | `kjokkentilgang_id` | bigint | Bruksenhetens tilknytning til kjøkken. Er en av lovlige koder. |
 | `skal_utga` | boolean | Om bruksenheten skal utgå ved ferdigstillelse av ombygging. Skal kun kunne være true for bruksenheter på Bygning. |
 | `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp |  |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_bygning_v1`
+
+Gjeldende bygninger i Matrikkelen. Én rad per bygning.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `bygningsnummer` | bigint | En entydig identifikasjon av bygningen. B
+
+*** WARNING: max output size exceeded, skipping output. ***
+
+år dette er satt er det korrekt at bebygd areal ikke er fyllt inn. Det er ikke mangelfull registrering. |
+| `tidligere_bygg_id` | bigint | Id til evt tidligere bygg, dersom flyttet. |
+| `oppvarmings_kode_ids` | array<bigint> | Kode for hvilket fyringssystem som utgjør hovedoppvarmingen.Flere kodeverdier kan angis, men bare dersom to fyringssystemer er likeverdige. |
+| `energikilde_kode_ids` | array<bigint> | Hvilke energikilder bygget baserer seg på. |
+| `bygningsstatus_kode_id` | bigint | Viser bygningens nåværende status. Merknad: I spesielle tilfeller kan et bygg få igangsettingstillatelse og ferdigattest for en del av bygget, og så igangsettingstillatelse for en annen del. |
+| `avlops_kode_id` | bigint | Hvilken avløpsordning bygget benytter seg av. |
+| `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
+| `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
+| `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+| `hovedbygg_id` | bigint | Bygningsendringens tilhørende bygning, kan ikke være null. |
+| `bygningsendrings_kode_id` | bigint | Hvordan bygningsendringen er bygget i forhold til bygningen. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_etasje_v1`
+
+Gjeldende etasjer for bygg. Én rad per bygg og etasje.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `byggobjekttype` | string |  |
+| `etasje_id` | bigint | Etasjens faktiske id. |
+| `etasjeplan_kode_id` | bigint | Hvilket plan etasje ligger i, f.eks. om det er en underetasje eller loftsetasje. Er en av gitte, lovlige typer. |
+| `etasjenummer` | int | Fortløpende nummerering av etasjer som har samme type. Kjeller- og underetasjer nummereres fra terrengnivå og nedover, dvs. har nummer 1 øverst. Hoved- og loftsetasjer nummereres fra terrengnivå og oppover, dvs. har nummer 1 nederst. |
+| `antall_boenheter` | int | Antall boenheter i etasjen. Beregnes automatisk av systemet etter bruksenheter av type bolig på etasjen. En bruksenhet regnes bare med i den etasjen den har sin inngang. |
+| `bruksareal_til_bolig` | double | Etasjens samlede brukareal til boligformål. |
+| `bruksareal_til_annet` | double | Bruksareal til annet enn bolig i henhold til NS 3940 med diverse unntak. |
+| `bruksareal_totalt` | double | Totalt bruksareal er sum av bruksareal til bolig og bruksareal til annet. |
+| `alternativt_areal` | double | Alternativt areal i etasjen. Kommunene bestemmer hva de vil legge i feltet, f.eks. leieareal. |
+| `alternativt_areal_2` | double | Feltet er til fri disposisjon for kommunene. |
+| `bruttoareal_til_bolig` | double | Bruttoareal for bolig. |
+| `bruttoareal_til_annet` | double | Bruttoareal for annet enn bolig. |
+| `bruttoareal_totalt` | double | Bruttoareal totalt. |
 | `oppdateringsdato` | timestamp |  |
 
 ## Egenskaper
@@ -672,6 +1068,68 @@ Veger i matrikkelen — nåtidsbilde med én rad per veg.
 | `kort_adressenavn` | string | En forkortelse av adressenavnet dersom dette er på mer enn 22 tegn. Hvis adressenavnet er på 22 tegn eller mindre vil kort adressenavn inneholde det samme navnet. Matrikkelforskriften § 51. Skal alltid brukes ved utveksling av data med andre systemer. |
 | `stedsnummer` | string | Viser til referanse i sentralt stedsnavnregister (SSR) |
 | `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `fact_bygning_statushistorikk_v1`
+
+Bygningsstatushistorikk for gjeldende bygninger. Én rad per bygning og statusregistrering.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Bygget statusforløpet gjelder. |
+| `bygningsstatushistorikk_id` | bigint | Intern nøkkel for forekomsten. Må være gitt. |
+| `bygningsstatus_kode_id` | bigint | Hvilken status, f.eks. at ferdigattest er gitt. Er en av gitte, lovlige statuser. Må være gitt. |
+| `arsak_til_foring_kode_id` | bigint |  |
+| `referanse` | string |  |
+| `dato` | date | Datoen hvor bygningen nådde statusen. Kan mangle. |
+| `registrert_dato` | timestamp | Registrert dato legges automatisk på ved innlegging i matrikkelen. Kan mangle på gamle data. |
+| `slettet_dato` | timestamp |  |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `fact_bygningsendring_statushistorikk_v1`
+
+Bygningsstatushistorikk for gjeldende bygningsendringer. Én rad per bygningsendring og statusregistrering.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Bygget statusforløpet gjelder. |
+| `bygningsstatushistorikk_id` | bigint | Intern nøkkel for forekomsten. Må være gitt. |
+| `bygningsstatus_kode_id` | bigint | Hvilken status, f.eks. at ferdigattest er gitt. Er en av gitte, lovlige statuser. Må være gitt. |
+| `arsak_til_foring_kode_id` | bigint |  |
+| `referanse` | string |  |
+| `dato` | date | Datoen hvor bygningen nådde statusen. Kan mangle. |
+| `registrert_dato` | timestamp | Registrert dato legges automatisk på ved innlegging i matrikkelen. Kan mangle på gamle data. |
+| `slettet_dato` | timestamp |  |
 | `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
 
 ## Egenskaper
