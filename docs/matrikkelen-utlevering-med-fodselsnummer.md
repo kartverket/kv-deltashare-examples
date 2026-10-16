@@ -940,7 +940,212 @@ Typer vannforsyning for bygg.
 ## Egenskaper
 
 ```yaml
-delta.en
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `dim_adresse_v1`
+
+Adresser i matrikkelen — nåtidsbilde med én rad per adresse. Vegadresse og Matrikkeladresse er samlet med `adressetype` som diskriminator. Type-spesifikke felt er NULL for den andre adressetypen. adresse_id er teknisk/API-identitet. Vegadresse har logisk identitet bestående av kommuneident, adressekode, nummer og eventuell bokstav. Matrikkeladresse har logisk identitet bestående av kommuneident, matrikkelnummer (gårdsnummer, bruksnummer og festenummer) og undernummer; seksjonsnummer inngår ikke. Matrikkeladresse kan ikke knyttes til Veg, og nummer og bokstav er derfor ikke utfylt. Historiske versjoner eksponeres ikke.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `adresse_id` | bigint | Teknisk/API-identitet for adressen. |
+| `adressetype` | string | Adressetype. Verdier: vegadresse og matrikkeladresse. Matrikkeladresse kan ikke knyttes til Veg. |
+| `representasjonspunkt_x` | double | Posisjonen i kartet i nord- og østkoordinater. Kan også inneholde høyde på representasjonspunkt for adresse. For andre representasjonspunkt brukes ikke høyden. Må være gitt. |
+| `representasjonspunkt_y` | double | Posisjonen i kartet i nord- og østkoordinater. Kan også inneholde høyde på representasjonspunkt for adresse. For andre representasjonspunkt brukes ikke høyden. Må være gitt. |
+| `representasjonspunkt_z` | double | Posisjonen i kartet i nord- og østkoordinater. Kan også inneholde høyde på representasjonspunkt for adresse. For andre representasjonspunkt brukes ikke høyden. Må være gitt. |
+| `representasjonspunkt_koordinatsystem_kode_id` | bigint | Koordinatsystem som posisjonen er oppgitt i. |
+| `representasjonspunkt_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `representasjonspunkt_stedfesting_verifisert` | boolean | Angir omrepresentasjonspunktet for adresse og bygning er stedfestingVerifisert. |
+| `adressetilleggsnavn` | string | Nedarvet bruksnavn, navn på en institusjon eller bygning eller grend brukt som del av den offisielle adressen. Merknad: Eier kan kreve og kommunen kan tildele adressetilleggsnavn til en offisiell adresse etter vilkår i matrikkelforskriften § 54 og § 55. Hvilken regel den er tildelt etter skal registreres i matrikkelen (adressetilleggsnavnkilde). |
+| `kortnavn` | string | En forkortelse av matrikkeladressenavnet dersom dette er på over 25 tegn. Hvis adressetilleggsnavnet er på 25 tegn eller mindre vil kortAdressetilleggsnavn inneholde det samme navnet. Merknad: Skal alltid brukes ved utveksling av data med andre systemer. |
+| `matrikkelenhet_id` | bigint | Matrikkelenheten adressen ligger på. For matrikkeladresse brukes matrikkelnummeret fra matrikkelenheten i den logiske adressidentiteten. |
+| `tilleggsnavn_kilde_kode_id` | bigint | Opprinnelsen til adressetilleggsnavnet. (§§ 54 og 55 i matrikkelforskriften). |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `veg_id` | bigint | Vegen adressen er knyttet til. NULL for matrikkeladresse, som ikke kan knyttes til Veg. |
+| `nummer` | int | Del av adressenummer for vegadresse. Skal være NULL for matrikkeladresse. |
+| `bokstav` | string | Eventuell bokstav som inngår i adressenummeret for vegadresse. Skal være NULL for matrikkeladresse. |
+| `undernummer` | int | Fortløpende nummerering av matrikkeladresser med samme gårds-, bruks- og festenummer. Inngår i den logiske identiteten til matrikkeladresse. Nummer og bokstav er ikke utfylt for matrikkeladresse. |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_atkomst_v1`
+
+Gjeldende atkomster for adresser. Én rad per adresse og atkomst.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `adresse_id` | bigint | Id for en adresse. Original felt i API: id.value |
+| `atkomst_id` | bigint |  |
+| `atkomsttype_kode_id` | bigint |  |
+| `punkt_x` | double | x-verdi(øst) for posisjonen. Kan ikke være 0. |
+| `punkt_y` | double | y-verdi(nord) for posisjonen. Kan ikke være 0. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Når atkomsten sist ble oppdatert i matrikkelen. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_bruksenhet_v1`
+
+Bruksenheter i matrikkelen med siste autoritative bruksenhetsnummer — nåtidsbilde med én rad per bruksenhet.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bruksenhet_id` | bigint | Id for en bruksenhet. Original felt i API: id.value |
+| `bruksenhetsnummer` | string | Autoritativt bruksenhetsnummer hentet fra BruksenhetService. |
+| `bygg_id` | bigint | Bygningen denne bruksenheten er knyttet til, kan ikke være null. |
+| `etasjeplan_kode_id` | bigint | Etasjeplanet bruksenheten ligger på. Kan for eksempel være hovedetasje eller underetasje. Standardverdi er EtasjeplanKode.IkkeOppgitt. |
+| `etasjenummer` | int | Etasjenr innenfor etasjeplanet bruksenheten ligger på; del av logisk ident. |
+| `lopenummer` | int | Løpenr innenfor etasjen bruksenheten ligger på; del av logisk ident. |
+| `adresse_id` | bigint | Adressen til bruksenheten; del av logisk ident. |
+| `matrikkelenhet_id` | bigint | Matrikkelenheten bruksenheten ligger på; del av logisk ident. Intern ID for Matrikkelenhet. |
+| `bruksenhetstype_kode_id` | bigint | Hva bruksenheten brukes til. Er en av gitte, lovlige typer. |
+| `antall_rom` | int | Antall rom for varig opphold, for eksempel stue, soverom, peisestue, kontor og lignende. For bygningsendringer kan det være negativt, for bygning må det være 0 eller større. |
+| `antall_bad` | int | Antall bad i bruksenheten, inkludert rom med dusj. For bygningsendringer kan det være negativt, for bygning må det være 0 eller større. |
+| `antall_wc` | int | Antall klosettskåler i bruksenheten. For bygningsendringer kan det være negativt, for bygning må det være 0 eller større. |
+| `bruksareal` | double | Alt bruksareal som hører til bruksenheten, uansett etasje. Boder og rom i underetasje og kjeller i blokker o.l. skal tas med dersom de tydelig tilhører de enkelte bruksenhetene spesielt. Rom som er felles for flere bruksenheter, f.eks felles trapp, gangareal, fellesrom og boder som ikke kan spesifiseres på bruksenhet tas derimot ikke med. Måling av bruksareal følger NS 3940. Unntak er at arealene skal gis i hele kvm. Arealet for store piper og kanaler trekkes ikke fra. |
+| `kjokkentilgang_id` | bigint | Bruksenhetens tilknytning til kjøkken. Er en av lovlige koder. |
+| `skal_utga` | boolean | Om bruksenheten skal utgå ved ferdigstillelse av ombygging. Skal kun kunne være true for bruksenheter på Bygning. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp |  |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_bygning_v1`
+
+Gjeldende bygninger i Matrikkelen. Én rad per bygning.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `bygningsnummer` | bigint | En entydig identifikasjon av bygningen. Bygningsnumrene er unike på landsbasis, og tildeles automatisk. |
+| `lopenummer` | int | Løpende nummerering av bygningsendringer til en bygning. Del av logisk ident som sammen med bygningsnr er unik på landsbasis. |
+| `kommune_id` | bigint | Id til kommunen som bygningen ligger i. Bygningen må ha kommune. |
+| `representasjonspunkt_x` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_y` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_z` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_koordinatsystem_kode_id` | bigint | Koordinatsystem som posisjonen er oppgitt i. |
+| `representasjonspunkt_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `representasjonspunkt_malemetode_id` | bigint | Metode for måling av geometrien i grunnriss. |
+| `representasjonspunkt_noyaktighet` | int | Punktstandardavviket i grunnriss for punkter samt tverravvik for linjer Merknad: Oppgitt i cm |
+| `representasjonspunkt_koordinatkvalitet_kode_id` | bigint | Beskrev kvalitet for representasjonspunkt på bygning og adresse i gammelt register, GAB. Denne er kun for å ta vare på disse dataene fra GAB. Når stedfestingVerifisert er satt ok/ja, skal koordinatkvalitet fjernes fra representasjonspunktet. |
+| `representasjonspunkt_stedfesting_verifisert` | boolean | Angir omrepresentasjonspunktet for adresse og bygning er stedfestingVerifisert. |
+| `har_sefrakminne` | boolean | Flagg som angir om bygget er registrert i SEFRAK-registeret. SEFRAK inneholder bygninger bygd før 1900 eventuelt 1945 i deler av Nord-Norge. |
+| `har_kulturminne` | boolean | Angir om bygget har registrert kulturminner fra Askeladden eller ikke. |
+| `har_heis` | boolean | Flagg for å indikere om det er en heis i bygningen. |
+| `skjermingsverdig` | boolean |  |
+| `bebygd_areal` | double | Grunnflaten av bygget. Det vil si det arealet bygget tar av eiendommen det står på. Merknad: Bebygd arealer er påkrevd å registrere for bygninger under oppføring eller som er ferdigstilt etter 14.09.2010, men ikke for bygningsendringer. |
+| `uten_bebygd_areal` | boolean | Flagg som angir at bygget faktisk ikke har bebygd areal. Når dette er satt er det korrekt at bebygd areal ikke er fyllt inn. Det er ikke mangelfull registrering. |
+| `tidligere_bygg_id` | bigint | Id til evt tidligere bygg, dersom flyttet. |
+| `oppvarmings_kode_ids` | array<bigint> | Kode for hvilket fyringssystem som utgjør hovedoppvarmingen.Flere kodeverdier kan angis, men bare dersom to fyringssystemer er likeverdige. |
+| `energikilde_kode_ids` | array<bigint> | Hvilke energikilder bygget baserer seg på. |
+| `bygningsstatus_kode_id` | bigint | Viser bygningens nåværende status. Merknad: I spesielle tilfeller kan et bygg få igangsettingstillatelse og ferdigattest for en del av bygget, og så igangsettingstillatelse for en annen del. |
+| `avlops_kode_id` | bigint | Hvilken avløpsordning bygget benytter seg av. |
+| `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
+| `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
+| `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+| `bygningstype_kode_id` | bigint | Bygningstypen sier hva bygningen er brukt til. |
+| `ufullstendig_areal` | boolean | Om arealopplysninger på bygget/bruksnheter/etasjer er fullstendig, dvs om bygget inneholder mer enn dets tilbygg. |
+
+## Egenskaper
+
+```yaml
+delta.enableChangeDataFeed: true
+delta.enableDeletionVectors: true
+delta.enableRowTracking: true
+delta.minReaderVersion: 3
+delta.minWriterVersion: 7
+delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_bygningsendring_v1`
+
+Gjeldende bygningsendringer i Matrikkelen. Én rad per bygningsendring.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `bygningsnummer` | bigint | En entydig identifikasjon av bygningen. Bygningsnumrene er unike på landsbasis, og tildeles automatisk. |
+| `lopenummer` | int | Løpende nummerering av bygningsendringer til en bygning. Del av logisk ident som sammen med bygningsnr er unik på landsbasis. |
+| `kommune_id` | bigint | Id til kommunen som bygningen ligger i. Bygningen må ha kommune. |
+| `representasjonspunkt_x` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_y` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_z` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_koordinatsystem_kode_id` | bigint | Koordinatsystem som posisjonen er oppgitt i. |
+| `representasjonspunkt_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `representasjonspunkt_malemetode_id` | bigint | Metode for måling av geometrien i grunnriss. |
+| `representasjonspunkt_noyaktighet` | int | Punktstandardavviket i grunnriss for punkter samt tverravvik for linjer Merknad: Oppgitt i cm |
+| `representasjonspunkt_koordinatkvalitet_kode_id` | bigint | Beskrev kvalitet for representasjonspunkt på bygning og adresse i gammelt register, GAB. Denne er kun for å ta vare på disse dataene fra GAB. Når stedfestingVerifisert er satt ok/ja, skal koordinatkvalitet fjernes fra representasjonspunktet. |
+| `representasjonspunkt_stedfesting_verifisert` | boolean | Angir omrepresentasjonspunktet for adresse og bygning er stedfestingVerifisert. |
+| `har_sefrakminne` | boolean | Flagg som angir om bygget er registrert i SEFRAK-registeret. SEFRAK inneholder bygninger bygd før 1900 eventuelt 1945 i deler av Nord-Norge. |
+| `har_kulturminne` | boolean | Angir om bygget har registrert kulturminner fra Askeladden eller ikke. |
+| `har_heis` | boolean | Flagg for å indikere om det er en heis i bygningen. |
+| `skjermingsverdig` | boolean |  |
+| `bebygd_areal` | double | Grunnflaten av bygget. Det vil si det arealet bygget tar av eiendommen det står på. Merknad: Bebygd arealer er påkrevd å registrere for bygninger under oppføring eller som er ferdigstilt etter 14.09.2010, men ikke for bygningsendringer. |
+| `uten_bebygd_areal` | boolean | Flagg som angir at bygget faktisk ikke har bebygd areal. Når dette er satt er det korrekt at bebygd areal ikke er fyllt inn. Det er ikke mangelfull registrering. |
+| `tidligere_bygg_id` | bigint | Id til evt tidligere bygg, dersom flyttet. |
+| `oppvarmings_kode_ids` | array<bigint> | Kode for hvilket fyringssystem som utgjør hovedoppvarmingen.Flere kodeverdier kan angis, men bare dersom to fyringssystemer er likeverdige. |
+| `energikilde_kode_ids` | array<bigint> | Hvilke energikilder bygget baserer seg på. |
+| `bygningsstatus_kode_id` | bigint | Viser bygningens nåværende status. Merknad: I spesielle tilfeller kan et bygg få igangsettingstillatelse og ferdigattest for en del av bygget, og så igangsettingstillatelse for en annen del. |
+| `avlops_kode_id` | bigint | Hvilken avløpsordning bygget benytter seg av. |
+| `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
+| `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
+| `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `uuid` | st
 
 *** WARNING: max output size exceeded, skipping output. ***
 
