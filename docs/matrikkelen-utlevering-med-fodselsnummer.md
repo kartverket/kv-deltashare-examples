@@ -1,31 +1,60 @@
 # Tabelldokumentasjon
 
-_Generert 2026-09-25T09:57:26+00:00_
+_Generert 2026-10-16T08:31:37+00:00_
 
 ## Tabeller
 
 - `bridge_adresse_krets_v1`
 - `bridge_krets_kommune_v1`
+- `bridge_matrikkelenhet_teig_v1`
+- `bridge_teig_teiggrense_v1`
+- `bridge_teiggrense_teiggrensepunkt_v1`
+- `code_administrativgrensekode_v1`
 - `code_adressetilleggsnavnkildekode_v1`
 - `code_anleggstypekode_v1`
 - `code_annenmatrikkelenhetskode_v1`
 - `code_arealkildekode_v1`
+- `code_arealmerknadkode_v1`
+- `code_arsaktilforingkode_v1`
 - `code_atkomsttypekode_v1`
+- `code_avlopskode_v1`
 - `code_bruksenhetstypekode_v1`
+- `code_bygningsendringskode_v1`
+- `code_bygningsstatuskode_v1`
+- `code_bygningstypekode_v1`
+- `code_energikildekode_v1`
 - `code_etasjeplankode_v1`
 - `code_formalseksjonkode_v1`
 - `code_generellkretstypekode_v1`
+- `code_grensemerkenedsattikode_v1`
+- `code_grensepunkttypekode_v1`
+- `code_hjelpelinjetypekode_v1`
 - `code_kjokkentilgangkode_v1`
 - `code_kommunalkretstypekode_v1`
 - `code_koordinatsystemkode_v1`
+- `code_malemetodekode_v1`
+- `code_naringsgruppekode_v1`
+- `code_noyaktighetsklassekode_v1`
+- `code_opprinnelseskode_v1`
+- `code_oppvarmingskode_v1`
+- `code_terrengdetaljkode_v1`
+- `code_vannforsyningskode_v1`
 - `dim_adresse_v1`
 - `dim_atkomst_v1`
 - `dim_bruksenhet_v1`
+- `dim_bygning_v1`
+- `dim_bygningsendring_v1`
+- `dim_etasje_v1`
 - `dim_fylke_v1`
 - `dim_kommune_v1`
 - `dim_krets_v1`
 - `dim_matrikkelenhet_v1`
+- `dim_teig_v1`
+- `dim_teiggrense_v1`
+- `dim_teiggrensepunkt_v1`
 - `dim_veg_v1`
+- `fact_bygning_statushistorikk_v1`
+- `fact_bygningsendring_statushistorikk_v1`
 # `bridge_adresse_krets_v1`
 
 Nåtidskoblinger mellom adresser og kretser. Én rad per adresse og krets.
@@ -40,12 +69,6 @@ Nåtidskoblinger mellom adresser og kretser. Én rad per adresse og krets.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
@@ -64,14 +87,92 @@ Nåtidskoblinger mellom kretser og kommuner. Én rad per krets og kommune.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
+```
+
+# `bridge_matrikkelenhet_teig_v1`
+
+Nåtidskoblinger mellom matrikkelenheter og teiger. Én rad per matrikkelenhet og teig; TeigForMatrikkelenhet-ID-en beholdes for sporbarhet.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `matrikkelenhet_id` | bigint | Matrikkelenheten som er knyttet til teigen. |
+| `teig_id` | bigint | Teigen som er knyttet til matrikkelenheten. |
+| `teig_for_matrikkelenhet_id` | bigint | Intern nøkkel for forekomsten. |
+| `hovedteig` | boolean | Alle matrikkelenheter har en hovedteig. Dersom matrikkelenheten kun har en teig, så er denne hovedteigen. Dersom matrikkelenheten har flere teiger, velges normalt den teigen der bygningen(e) står, som hovedteig. Hovedteig velges ellers skjønnsmessig, der hovedkriteriet vil være hvilken av teigene som fremstår som den mest sentrale. Hovedteigens representasjonspunkt vil også være matrikkelenhetens representasjonspunkt. Foreslås automatisk slik: hvis én teig så settes den til hovedteig; hvis flere teiger og en eller flere har boligbygg foreslås den største teigen; hvis flere teiger og en eller flere har andre bygg foreslås den største teigen; hvis flere teiger uten bygg foreslås den største teigen. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Når koblingen sist ble oppdatert i matrikkelen. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `bridge_teig_teiggrense_v1`
+
+Nåtidskoblinger mellom teiger og teiggrenser, hentet fra teigens flategeometri.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `teig_id` | bigint | Teigen som teiggrensen avgrenser. Relasjonen er avledet fra geometrien og finnes ikke direkte i databasen: Teig har flate og Teiggrense har forløp. |
+| `teiggrense_id` | bigint | Grenselinjen som CurveDirection definerer med retning for et Boundary. |
+| `boundary_id` | bigint | Unik ID for Boundary-komponenten. |
+| `grense_rolle` | string | Om Boundary inngår som ytre avgrensning (exterior) eller som et hull (interior) i ComplexSurface. |
+| `curve_direction_rekkefolge` | int |  |
+| `retning` | boolean | Angir om grenselinjen går fra startpunkt til endepunkt (true), eller omvendt. |
+| `curve_direction_id` | bigint | Unik ID for CurveDirection-komponenten. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `bridge_teiggrense_teiggrensepunkt_v1`
+
+Nåtidskoblinger mellom teiggrenser og start-/endepunktene deres.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `teiggrense_id` | bigint | Teiggrensen punktet avgrenser. |
+| `teiggrensepunkt_id` | bigint | Teiggrensepunktet som er start- eller endepunkt. |
+| `punkt_rolle` | string | Punktets rolle på teiggrensen: start eller endepunkt. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `code_administrativgrensekode_v1`
+
+Angir når en teiggrense også er administrativ grense: kommune-, fylkes-, riks- eller territorialgrense.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `kodeverdi_sosi45` | string | SOSI 4.5-verdi for koden. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
 ```
 
 # `code_adressetilleggsnavnkildekode_v1`
@@ -90,12 +191,6 @@ Opphav til adressetilleggsnavn og årsaken til at navnet er registrert i Matrikk
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -115,12 +210,6 @@ Type anlegg som anleggseiendommen representerer, for eksempel tunnel, bro, parke
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -140,12 +229,6 @@ Typer annen matrikkelenhet, blant annet ikke oppgitt og bestående registrert br
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -165,12 +248,44 @@ Hvordan arealet er framkommet, for eksempel målebrev, registreringsbrev eller a
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_arealmerknadkode_v1`
+
+Mulige merknader til teigareal, generert blant annet fra hjelpelinjetypen på teigens teiggrenser.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_arsaktilforingkode_v1`
+
+Årsaker til føring av bygningsstatus.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 ```
 
@@ -190,12 +305,25 @@ Type atkomst, for eksempel sommer-, vinter-, nødetat- eller øyatkomst.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_avlopskode_v1`
+
+Avløpsordninger som bygg benytter.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 ```
 
@@ -215,12 +343,83 @@ Typer bruksenheter i en bygning, for eksempel bolig, fritidsbolig og ikke godkje
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_bygningsendringskode_v1`
+
+Hvordan en bygningsendring er bygget i forhold til hovedbygningen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_bygningsstatuskode_v1`
+
+Gjeldende og historiske statuser for bygg, med ordnede lovlige årsaker til føring.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `lovlige_arsaker_til_foring_ids` | array<bigint> | Liste av lovlige årsaker for føring som bygningstatuskoden kan ha. Rekkefølgen er vesentlig. Om systemet skal velge skal første årsak benyttes. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_bygningstypekode_v1`
+
+Hva en bygning er brukt til.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_energikildekode_v1`
+
+Energikilder som et bygg baserer seg på.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 ```
 
@@ -240,12 +439,6 @@ Etasjeplanbetegnelse som viser hovedetasje, kjelleretasje, loft eller underetasj
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -265,12 +458,6 @@ Lovlige formål for seksjoner, blant annet boligseksjon, næringsseksjon og saml
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -290,12 +477,69 @@ Generelle kretstyper for grunnkrets, valgkrets, kirkesogn, postnummerområde og 
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_grensemerkenedsattikode_v1`
+
+Hva grensemerket er nedsatt i, for eksempel jord, fjell, mur, vann eller annen terrengdetalj.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `kodeverdi_sosi45` | string | SOSI 4.5-verdi for koden. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_grensepunkttypekode_v1`
+
+Hvordan et grensepunkt er merket eller bestemt, for eksempel bolt, kors, rør, vegkant eller fastmerke.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `sosi_kode` | int | SOSI-kode for grensepunkttypen. |
+| `kodeverdi_sosi45` | string | SOSI 4.5-verdi for koden. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_hjelpelinjetypekode_v1`
+
+Typer hjelpelinjer som brukes når teiggrensen er ukjent eller ikke registrert, for eksempel vannkant, vegkant og punktfeste.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `sosi_kode` | string | SOSI-kode for hjelpelinjetypen. |
+| `obj_type` | string | SOSI-objekttype for hjelpelinjen. |
+| `kodeverdi_sosi45` | string | SOSI 4.5-verdi for koden. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 ```
 
@@ -315,12 +559,6 @@ Tilknytning til kjøkken i bruksenheten: kjøkken, felles kjøkken eller ikke kj
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -341,12 +579,6 @@ Kretstyper som bare er gyldige i én kommune, blant annet skolekrets.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 ```
 
@@ -368,12 +600,143 @@ Koordinatsystem som angir geografisk koordinatsystem eller kartplan, sone og aks
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+```
+
+# `code_malemetodekode_v1`
+
+Metoden som ligger til grunn for registrering av en posisjon. Se Geonorge SOSI-kodeliste.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `sosi_kode` | int | SOSI-kode for målemetoden. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_naringsgruppekode_v1`
+
+Næringsgruppen som opptar størst andel av samlet areal i et bygg.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_noyaktighetsklassekode_v1`
+
+Klassifikasjon av stedfestingsnøyaktighet for teiggrensepunkt og grenser.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `sosi_navn` | string | SOSI-navn for nøyaktighetsklassen. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_opprinnelseskode_v1`
+
+Hvordan et bygg opprinnelig ble registrert.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_oppvarmingskode_v1`
+
+Fyringssystem som utgjør hovedoppvarmingen i et bygg.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_terrengdetaljkode_v1`
+
+Terrengdetaljen som teiggrensen fulgte ved registrering, for eksempel elv, bygning, veg, vannskille eller steingjerde.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `sosi_34` | string | SOSI 3.4-verdi for terrengdetaljen. |
+| `kodeverdi_sosi45` | string | SOSI 4.5-verdi for koden. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_vannforsyningskode_v1`
+
+Typer vannforsyning for bygg.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 ```
 
@@ -407,12 +770,6 @@ Adresser i matrikkelen — nåtidsbilde med én rad per adresse. Vegadresse og M
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
@@ -436,19 +793,13 @@ Gjeldende atkomster for adresser. Én rad per adresse og atkomst.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
 
 # `dim_bruksenhet_v1`
 
-Bruksenheter i matrikkelen med siste autoritative bruksenhetsnummer — nåtidsbilde med én rad per bruksenhet.
+Bruksenheter i matrikkelen med siste autoritative bruksenhetsnummer — nåtidsbilde med én rad per bruksenhet. 
 
 ## Kolonner
 
@@ -475,12 +826,125 @@ Bruksenheter i matrikkelen med siste autoritative bruksenhetsnummer — nåtidsb
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_bygning_v1`
+
+Gjeldende bygninger i Matrikkelen. Én rad per bygning.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `bygningsnummer` | bigint | En entydig identifikasjon av bygningen. Bygningsnumrene er unike på landsbasis, og tildeles automatisk. |
+| `lopenummer` | int | Løpende nummerering av bygningsendringer til en bygning. Del av logisk ident som sammen med bygningsnr er unik på landsbasis. |
+| `kommune_id` | bigint | Id til kommunen som bygningen ligger i. Bygningen må ha kommune. |
+| `representasjonspunkt_x` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_y` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_z` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_koordinatsystem_kode_id` | bigint | Koordinatsystem som posisjonen er oppgitt i. |
+| `representasjonspunkt_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `representasjonspunkt_stedfesting_verifisert` | boolean | Angir omrepresentasjonspunktet for adresse og bygning er stedfestingVerifisert. |
+| `har_sefrakminne` | boolean | Flagg som angir om bygget er registrert i SEFRAK-registeret. SEFRAK inneholder bygninger bygd før 1900 eventuelt 1945 i deler av Nord-Norge. |
+| `har_kulturminne` | boolean | Angir om bygget har registrert kulturminner fra Askeladden eller ikke. |
+| `har_heis` | boolean | Flagg for å indikere om det er en heis i bygningen. |
+| `skjermingsverdig` | boolean |  |
+| `bebygd_areal` | double | Grunnflaten av bygget. Det vil si det arealet bygget tar av eiendommen det står på. Merknad: Bebygd arealer er påkrevd å registrere for bygninger under oppføring eller som er ferdigstilt etter 14.09.2010, men ikke for bygningsendringer. |
+| `uten_bebygd_areal` | boolean | Flagg som angir at bygget faktisk ikke har bebygd areal. Når dette er satt er det korrekt at bebygd areal ikke er fyllt inn. Det er ikke mangelfull registrering. |
+| `tidligere_bygg_id` | bigint | Id til evt tidligere bygg, dersom flyttet. |
+| `oppvarmings_kode_ids` | array<bigint> | Kode for hvilket fyringssystem som utgjør hovedoppvarmingen.Flere kodeverdier kan angis, men bare dersom to fyringssystemer er likeverdige. |
+| `energikilde_kode_ids` | array<bigint> | Hvilke energikilder bygget baserer seg på. |
+| `bygningsstatus_kode_id` | bigint | Viser bygningens nåværende status. Merknad: I spesielle tilfeller kan et bygg få igangsettingstillatelse og ferdigattest for en del av bygget, og så igangsettingstillatelse for en annen del. |
+| `avlops_kode_id` | bigint | Hvilken avløpsordning bygget benytter seg av. |
+| `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
+| `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
+| `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+| `bygningstype_kode_id` | bigint | Bygningstypen sier hva bygningen er brukt til. |
+| `ufullstendig_areal` | boolean | Om arealopplysninger på bygget/bruksnheter/etasjer er fullstendig, dvs om bygget inneholder mer enn dets tilbygg. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `dim_bygningsendring_v1`
+
+Gjeldende bygningsendringer i Matrikkelen. Én rad per bygningsendring.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `bygningsnummer` | bigint | En entydig identifikasjon av bygningen. Bygningsnumrene er unike på landsbasis, og tildeles automatisk. |
+| `lopenummer` | int | Løpende nummerering av bygningsendringer til en bygning. Del av logisk ident som sammen med bygningsnr er unik på landsbasis. |
+| `kommune_id` | bigint | Id til kommunen som bygningen ligger i. Bygningen må ha kommune. |
+| `representasjonspunkt_x` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_y` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_z` | double | Representasjonspunkt for bygget. Skal plasseres innenfor bygingens omriss. Punkt registreres også uten at en har omrisset, men da settes ikke kvalitetsmerket for at den er verifisert mot bygningens omriss. |
+| `representasjonspunkt_koordinatsystem_kode_id` | bigint | Koordinatsystem som posisjonen er oppgitt i. |
+| `representasjonspunkt_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `representasjonspunkt_stedfesting_verifisert` | boolean | Angir omrepresentasjonspunktet for adresse og bygning er stedfestingVerifisert. |
+| `har_sefrakminne` | boolean | Flagg som angir om bygget er registrert i SEFRAK-registeret. SEFRAK inneholder bygninger bygd før 1900 eventuelt 1945 i deler av Nord-Norge. |
+| `har_kulturminne` | boolean | Angir om bygget har registrert kulturminner fra Askeladden eller ikke. |
+| `har_heis` | boolean | Flagg for å indikere om det er en heis i bygningen. |
+| `skjermingsverdig` | boolean |  |
+| `bebygd_areal` | double | Grunnflaten av bygget. Det vil si det arealet bygget tar av eiendommen det står på. Merknad: Bebygd arealer er påkrevd å registrere for bygninger under oppføring eller som er ferdigstilt etter 14.09.2010, men ikke for bygningsendringer. |
+| `uten_bebygd_areal` | boolean | Flagg som angir at bygget faktisk ikke har bebygd areal. Når dette er satt er det korrekt at bebygd areal ikke er fyllt inn. Det er ikke mangelfull registrering. |
+| `tidligere_bygg_id` | bigint | Id til evt tidligere bygg, dersom flyttet. |
+| `oppvarmings_kode_ids` | array<bigint> | Kode for hvilket fyringssystem som utgjør hovedoppvarmingen.Flere kodeverdier kan angis, men bare dersom to fyringssystemer er likeverdige. |
+| `energikilde_kode_ids` | array<bigint> | Hvilke energikilder bygget baserer seg på. |
+| `bygningsstatus_kode_id` | bigint | Viser bygningens nåværende status. Merknad: I spesielle tilfeller kan et bygg få igangsettingstillatelse og ferdigattest for en del av bygget, og så igangsettingstillatelse for en annen del. |
+| `avlops_kode_id` | bigint | Hvilken avløpsordning bygget benytter seg av. |
+| `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
+| `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
+| `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+| `hovedbygg_id` | bigint | Bygningsendringens tilhørende bygning, kan ikke være null. |
+| `bygningsendrings_kode_id` | bigint | Hvordan bygningsendringen er bygget i forhold til bygningen. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `dim_etasje_v1`
+
+Gjeldende etasjer for bygg. Én rad per bygg og etasje.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Id for Bygg. |
+| `byggobjekttype` | string | Type matrikkelobjekt som bygg_id viser til. Verdier: bygning og bygningsendring. |
+| `etasje_id` | bigint | Etasjens faktiske id. |
+| `etasjeplan_kode_id` | bigint | Hvilket plan etasje ligger i, f.eks. om det er en underetasje eller loftsetasje. Er en av gitte, lovlige typer. |
+| `etasjenummer` | int | Fortløpende nummerering av etasjer som har samme type. Kjeller- og underetasjer nummereres fra terrengnivå og nedover, dvs. har nummer 1 øverst. Hoved- og loftsetasjer nummereres fra terrengnivå og oppover, dvs. har nummer 1 nederst. |
+| `antall_boenheter` | int | Antall boenheter i etasjen. Beregnes automatisk av systemet etter bruksenheter av type bolig på etasjen. En bruksenhet regnes bare med i den etasjen den har sin inngang. |
+| `bruksareal_til_bolig` | double | Etasjens samlede brukareal til boligformål. |
+| `bruksareal_til_annet` | double | Bruksareal til annet enn bolig i henhold til NS 3940 med diverse unntak. |
+| `bruksareal_totalt` | double | Totalt bruksareal er sum av bruksareal til bolig og bruksareal til annet. |
+| `alternativt_areal` | double | Alternativt areal i etasjen. Kommunene bestemmer hva de vil legge i feltet, f.eks. leieareal. |
+| `alternativt_areal_2` | double | Feltet er til fri disposisjon for kommunene. |
+| `bruttoareal_til_bolig` | double | Bruttoareal for bolig. |
+| `bruttoareal_til_annet` | double | Bruttoareal for annet enn bolig. |
+| `bruttoareal_totalt` | double | Bruttoareal totalt. |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 scd: type-1
 ```
@@ -489,7 +953,7 @@ scd: type-1
 
 Norske fylker — nåtidsbilde. Én rad per fylke, siste versjon fra matrikkelen. Historiske versjoner eksponeres ikke; utgåtte fylker er med og markert via `gyldig_til_dato` og `ny_fylke_id` for etterfølger.
 
-Innholder fylkesknytning for en en kommune slik en matrikkelenhet kan plasseres geografisk innefor en kommune og igjen innenfor et fylke. Dette gjør at feks Svalbard er med i dette datasettet selv om det ikke er en av Norges fylker, for å kunne definere matrikkelenheter på Svalbard. TESTFYLKE eksisterer ikke i dette datasettet, men finnes i tilsvarende tjenester i M22.
+Innholder fylkesknytning for en en kommune slik en matrikkelenhet kan plasseres geografisk innefor en kommune og igjen innenfor et fylke. Dette gjør at feks Svalbard er med i dette datasettet selv om det ikke er en av Norges fylker, for å kunne definere matrikkelenheter på Svalbard. TESTFYLKE eksisterer ikke i dette datasettet, men finnes i tilsvarende tjenester i M22. 
 
 ## Kolonner
 
@@ -507,12 +971,6 @@ Innholder fylkesknytning for en en kommune slik en matrikkelenhet kan plasseres 
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
@@ -544,12 +1002,6 @@ Inneholder kommuner slik at en matrikkelenhet kan plasseres geografisk innenfor 
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
@@ -577,12 +1029,6 @@ Kretser i matrikkelen — nåtidsbilde med én rad per krets.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
@@ -647,12 +1093,102 @@ Norske matrikkelenheter (grunneiendom, seksjon, festegrunn, jordsameie, anleggse
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
+medallion: gold
+scd: type-1
+```
+
+# `dim_teig_v1`
+
+Teiger i matrikkelen — nåtidsbilde med én rad per teig.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `teig_id` | bigint | Id for en teig. |
+| `datafangstdato` | date | Datafangstdato. |
+| `lagret_beregnet_areal` | double | Beregnet areal i kartplan, det vil si areal av teig som er avgrenset av teiggrenser og/eller hjelpelinjer. Hvis noen av teiggrensene til teigen er hjelpelinjer eller teigen er omtvistet (merket på teig eller teiggrense) skal teigarealmerknad alltid oppgis sammen med teigarealet. Merknad 1: For teiger tilhørende punktfester angis ikke teigareal, kun arealmerknad på teig. Teiger som inneholder punktfester (øyer avgrenset av hjelpelinje punktfeste), får ikke fratrekk for disse ved beregning av teigareal. Merknad 2: Det oppgis ikke kvalitet/nøyaktighet på det beregnede arealet. Informasjon om kvalitet kan avledes fra arealmerknad(er) på teig og fra antatt stedfestingsnøyaktighet på teiggrensepunkt eller teiggrenser. |
+| `avklart_eiere` | boolean | Angir om det er avklart hvilke matrikkelenheter som har andel i det uregistrerte jordsameiet. Merknad: Denne kan bare være Ja/True hvis UregistrertJordsameie er Ja/true. |
+| `teig_med_flere_matrikkelenheter` | boolean | Teig som er knyttet til flere matrikkelenheter, men hvor de interne grensene mellom matrikkelenhetene er ukjente (i hvert fall ikke registrert i matrikkelen). |
+| `tvist` | boolean | Om det er tvil/tvist om eiendomsretten til teigen. Merknad: Kan også være brukt når teigen har omtvistede grenser eller grenser det er tvil om forløpet til, men der skal grensene være merket med 'omtvistet'. |
+| `uregistrert_jordsameie` | boolean | Angir om teigen inngår i brukssameie mellom matrikkelenheter, hvor jordsameiet ikke har eget matrikkelnummer (dvs. ikke matrikkelenheten 'Jordsameie'). |
+| `representasjonspunkt_x` | double | Punkt som representerer teigen. Punktet må ligge innenfor teigens avgrensing. Representasjonspunktet til en teig er vanligvis plassert i tyngdepunktet til flata. Posisjonen er oppgitt i nord- og østkoordinater. Kan også inneholde høyde på representasjonspunkt for adresse. For andre representasjonspunkt brukes ikke høyden. Må være gitt. |
+| `representasjonspunkt_y` | double | Punkt som representerer teigen. Punktet må ligge innenfor teigens avgrensing. Representasjonspunktet til en teig er vanligvis plassert i tyngdepunktet til flata. Posisjonen er oppgitt i nord- og østkoordinater. Kan også inneholde høyde på representasjonspunkt for adresse. For andre representasjonspunkt brukes ikke høyden. Må være gitt. |
+| `representasjonspunkt_z` | double | Punkt som representerer teigen. Punktet må ligge innenfor teigens avgrensing. Representasjonspunktet til en teig er vanligvis plassert i tyngdepunktet til flata. Posisjonen er oppgitt i nord- og østkoordinater. Kan også inneholde høyde på representasjonspunkt for adresse. For andre representasjonspunkt brukes ikke høyden. Må være gitt. |
+| `representasjonspunkt_koordinatsystem_kode_id` | bigint | Koordinatsystem som posisjonen er oppgitt i. Må være gitt. |
+| `representasjonspunkt_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `representasjonspunkt_malemetode_id` | bigint | Beskrivelse av kvaliteten på representasjonspunktet. Kun aktuelt for punktfeste. Metode for måling av geometrien i grunnriss. |
+| `representasjonspunkt_noyaktighet` | int | Beskrivelse av kvaliteten på representasjonspunktet. Kun aktuelt for punktfeste. Punktstandardavviket i grunnriss for punkter samt tverravvik for linjer. Oppgitt i cm. |
+| `representasjonspunkt_stedfesting_verifisert` | boolean | Angir omrepresentasjonspunktet for adresse og bygning er stedfestingVerifisert. |
+| `teigarealmerknad_ids` | array<bigint> |  |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `dim_teiggrense_v1`
+
+Teiggrenser i matrikkelen — nåtidsbilde med én rad per teiggrense.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `teiggrense_id` | bigint | Id for en teiggrense. |
+| `datafangstdato` | date | Dato for datainnsamling. |
+| `omtvistet` | boolean | Angir om grensen er omtvistet, eller det er tvil om forløpet. |
+| `administrativ_grense_kode_id` | bigint | Angir om teiggrensen samtidig representerer en administrativ grense. Standardverdi er AdministrativGrenseKode.IKKEADMGRENSE. Må være gitt. |
+| `folger_terrengdetalj_id` | bigint | Angir hvilken terrengdetalj matrikkelenhetsgrensen/eiendomsgrensen eventuelt følger. Merknad: Egenskapen forteller hvilken terrengdetalj grenselinja fulgte på registreringstidspunktet. En må være oppmerksom på at dette kan ha endret seg. F.eks kan en strandlinje bli fylt ut, en elv kan få et nytt forløp eller en veg kan skifte trasé. Derfor må en vurdere nøye når en oppdaterer terrengdetaljer med bedre geometri etter f.eks en nykartlegging. |
+| `hjelpelinjetype_id` | bigint | Avgrensing for teig som brukes når matrikkelenhetsgrense/eiendomsgrense ikke er kjent eller ikke er registrert i matrikkelen. Brukes i følgende tilfeller: - punktfeste - generert eiendomsgrense - avgrensing mellom to teiger hvor grenseforløp ikke er kjent - avgrensing mot innsjø, vassdrag eller sjø hvor grensene ikke er registrert i Matrikkelen - avgrensing mot fjellområder hvor grensene ikke er registrert i Matrikkelen For bruk mot vann: Brukes bare når de virkelige teiggrenser i eller langs vannet ikke er tilgjengelig eller er vanskelig tilgjengelig. En bør benytte den best kartlagte avgrensingen, fordi teigene ofte presenteres sammen med det beste kartgrunnlaget. |
+| `kurve_koordinatsystem_kode_id` | bigint | Aktuelt koordinatsystem for koordinatene til denne grenselinjen. |
+| `kurve_original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `kurvepunkter` | array<struct<x:double,<br>y:double,<br>z:double>> | Kurve, en kontinuerlig krum linje der det enkelte punktet i sekvensen ikke har noen spesiell betydning. Benyttes for å beskrive avgrensninger når disse følger naturlige terrengdetaljer. |
+| `buepunkt_x` | double | Bue, sirkelbuen mellom to punkt. |
+| `buepunkt_y` | double | Bue, sirkelbuen mellom to punkt. |
+| `buepunkt_z` | double | Bue, sirkelbuen mellom to punkt. |
+| `noyaktighet` | int | Brukes der teiggrensen har dårligere kvalitet enn dårligste teiggrensepunkt, og der den er kurvatur. Punktstandardavviket i grunnriss for punkter samt tverravvik for linjer. Oppgitt i cm. |
+| `malemetode_id` | bigint | Brukes der teiggrensen har dårligere kvalitet enn dårligste teiggrensepunkt, og der den er kurvatur. Metode for måling av geometrien i grunnriss. |
+| `lagret_noyaktighetsklasse_id` | bigint | Klassifikasjon av stedfestingsnøyaktighet på grenser basert på dårligste registrerte nøyaktighet til grensepunktene (endepunktene). Unntaksvis er klassifikasjonen basert på nøyaktighet registrert på selve grensen. Verdier: MaleNoyaktighetEuref = nøyaktige målinger med S <= 10 cm; MaleNoyaktighetNGO = middels nøyaktige eller gamle transformerte målinger med 10 < S <= 30 cm; TekniskKartNoyaktighet = mindre nøyaktige målinger og grenser fra tekniske kart med 30 < S < 200 cm; OkonomiskKartNoyaktighet = mindre nøyaktige grenser og grenser fra Økonomisk kartverk med 200 <= S < 500 cm; SkisseNoyaktighet = skisserte data med S >= 500 cm og målemetode 80, 81 eller 82, eller uten angitt målemetode; Norge1_50000 = lite nøyaktige grenser med S >= 500 cm og annen målemetode; IngenNoyaktighet = data uten registrert nøyaktighet. S er antatt standardavvik. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `dim_teiggrensepunkt_v1`
+
+Teiggrensepunkter i matrikkelen — nåtidsbilde med én rad per teiggrensepunkt.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `teiggrensepunkt_id` | bigint | Id for et teiggrensepunkt. |
+| `datafangstdato` | date | Dato når datainnsamling er skjedd.  Vil for eksempel være fotograferingsdato for data innsamlet via fotogrammetri, og måledato for data innsamlet i forbindelse med oppmålingsforretninger. |
+| `posisjon_x` | double | Grensepunktets posisjon. Må være gitt. |
+| `posisjon_y` | double | Grensepunktets posisjon. Må være gitt. |
+| `posisjon_z` | double | Grensepunktets posisjon. Må være gitt. |
+| `koordinatsystem_kode_id` | bigint | Angir koordinatsystemet som teiggrensepunktets koordinater er lagret i. Må være gitt. |
+| `original_koordinatsystem_kode_id` | bigint | Verdi for orginalt koordinatsystem. Dette blir kun satt dersom representasjonspunktet blir transformert ved henting! |
+| `grensemerke_nedsatt_i_id` | bigint | Beskriver i hvilket medium grensemerket er nedsatt. |
+| `grensepunkttype_id` | bigint | Angir hva slags grensemerke som er brukt i terrenget. Sier også om grensepunktet er merket i terrenget, eller om det bare er et registreringsteknisk punkt. |
+| `noyaktighet` | int | Målemetode og nøyaktighet for teiggrensepunktet. Punktstandardavviket i grunnriss for punkter samt tverravvik for linjer. Oppgitt i cm. |
+| `malemetode_id` | bigint | Målemetode og nøyaktighet for teiggrensepunktet. |
+| `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
 medallion: gold
 scd: type-1
 ```
@@ -677,12 +1213,57 @@ Veger i matrikkelen — nåtidsbilde med én rad per veg.
 ## Egenskaper
 
 ```yaml
-delta.enableChangeDataFeed: true
-delta.enableDeletionVectors: true
-delta.enableRowTracking: true
-delta.minReaderVersion: 3
-delta.minWriterVersion: 7
-delta.parquet.compression.codec: zstd
 medallion: gold
 scd: type-1
 ```
+
+# `fact_bygning_statushistorikk_v1`
+
+Bygningsstatushistorikk for gjeldende bygninger. Én rad per bygning og statusregistrering.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Bygget statusforløpet gjelder. |
+| `bygningsstatushistorikk_id` | bigint | Intern nøkkel for forekomsten. Må være gitt. |
+| `bygningsstatus_kode_id` | bigint | Hvilken status, f.eks. at ferdigattest er gitt. Er en av gitte, lovlige statuser. Må være gitt. |
+| `arsak_til_foring_kode_id` | bigint |  |
+| `referanse` | string |  |
+| `dato` | date | Datoen hvor bygningen nådde statusen. Kan mangle. |
+| `registrert_dato` | timestamp | Registrert dato legges automatisk på ved innlegging i matrikkelen. Kan mangle på gamle data. |
+| `slettet_dato` | timestamp |  |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `fact_bygningsendring_statushistorikk_v1`
+
+Bygningsstatushistorikk for gjeldende bygningsendringer. Én rad per bygningsendring og statusregistrering.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `bygg_id` | bigint | Bygget statusforløpet gjelder. |
+| `bygningsstatushistorikk_id` | bigint | Intern nøkkel for forekomsten. Må være gitt. |
+| `bygningsstatus_kode_id` | bigint | Hvilken status, f.eks. at ferdigattest er gitt. Er en av gitte, lovlige statuser. Må være gitt. |
+| `arsak_til_foring_kode_id` | bigint |  |
+| `referanse` | string |  |
+| `dato` | date | Datoen hvor bygningen nådde statusen. Kan mangle. |
+| `registrert_dato` | timestamp | Registrert dato legges automatisk på ved innlegging i matrikkelen. Kan mangle på gamle data. |
+| `slettet_dato` | timestamp |  |
+| `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
