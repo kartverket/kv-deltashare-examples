@@ -1,10 +1,13 @@
 # Tabelldokumentasjon
 
-_Generert 2026-10-16T08:31:37+00:00_
+_Generert 2026-10-20T06:51:03+00:00_
 
 ## Tabeller
 
 - `bridge_adresse_krets_v1`
+- `bridge_forretning_teig_v1`
+- `bridge_forretning_teiggrense_v1`
+- `bridge_forretning_teiggrensepunkt_v1`
 - `bridge_krets_kommune_v1`
 - `bridge_matrikkelenhet_teig_v1`
 - `bridge_teig_teiggrense_v1`
@@ -15,6 +18,7 @@ _Generert 2026-10-16T08:31:37+00:00_
 - `code_annenmatrikkelenhetskode_v1`
 - `code_arealkildekode_v1`
 - `code_arealmerknadkode_v1`
+- `code_arsaktilfeilrettingkode_v1`
 - `code_arsaktilforingkode_v1`
 - `code_atkomsttypekode_v1`
 - `code_avlopskode_v1`
@@ -25,6 +29,8 @@ _Generert 2026-10-16T08:31:37+00:00_
 - `code_energikildekode_v1`
 - `code_etasjeplankode_v1`
 - `code_formalseksjonkode_v1`
+- `code_forretningsklassekode_v1`
+- `code_forretningstypekode_v1`
 - `code_generellkretstypekode_v1`
 - `code_grensemerkenedsattikode_v1`
 - `code_grensepunkttypekode_v1`
@@ -37,7 +43,9 @@ _Generert 2026-10-16T08:31:37+00:00_
 - `code_noyaktighetsklassekode_v1`
 - `code_opprinnelseskode_v1`
 - `code_oppvarmingskode_v1`
+- `code_rolleiforretningkode_v1`
 - `code_terrengdetaljkode_v1`
+- `code_tinglysingsstatuskode_v1`
 - `code_vannforsyningskode_v1`
 - `dim_adresse_v1`
 - `dim_atkomst_v1`
@@ -53,8 +61,10 @@ _Generert 2026-10-16T08:31:37+00:00_
 - `dim_teiggrense_v1`
 - `dim_teiggrensepunkt_v1`
 - `dim_veg_v1`
+- `fact_areal_i_forretning_v1`
 - `fact_bygning_statushistorikk_v1`
 - `fact_bygningsendring_statushistorikk_v1`
+- `fact_forretning_v1`
 # `bridge_adresse_krets_v1`
 
 Nåtidskoblinger mellom adresser og kretser. Én rad per adresse og krets.
@@ -65,6 +75,60 @@ Nåtidskoblinger mellom adresser og kretser. Én rad per adresse og krets.
 | --- | --- | --- |
 | `adresse_id` | bigint |  |
 | `krets_id` | bigint |  |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `bridge_forretning_teig_v1`
+
+Nåtidskoblinger mellom forretninger og teiger. Én rad per forretning og teig. Eldre forretninger kan vise til teiger som ikke lenger finnes i nåtidsdimensjonen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `forretning_id` | bigint | ID til forretningen teigen er knyttet til. |
+| `teig_id` | bigint | ID til teigen som er knyttet til forretningen. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `bridge_forretning_teiggrense_v1`
+
+Nåtidskoblinger mellom forretninger og teiggrenser. Én rad per forretning og teiggrense. Eldre forretninger kan vise til teiggrenser som ikke lenger finnes i nåtidsdimensjonen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `forretning_id` | bigint | ID til forretningen teiggrensen er knyttet til. |
+| `teiggrense_id` | bigint | ID til teiggrensen som er knyttet til forretningen. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
+# `bridge_forretning_teiggrensepunkt_v1`
+
+Nåtidskoblinger mellom forretninger og teiggrensepunkter. Én rad per forretning og teiggrensepunkt. Eldre forretninger kan vise til teiggrensepunkter som ikke lenger finnes i nåtidsdimensjonen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `forretning_id` | bigint | ID til forretningen teiggrensepunktet er knyttet til. |
+| `teiggrensepunkt_id` | bigint | ID til teiggrensepunktet som er knyttet til forretningen. |
 
 ## Egenskaper
 
@@ -270,6 +334,25 @@ Mulige merknader til teigareal, generert blant annet fra hjelpelinjetypen på te
 medallion: gold
 ```
 
+# `code_arsaktilfeilrettingkode_v1`
+
+Kodeliste for årsak til feilretting i Matrikkelen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
 # `code_arsaktilforingkode_v1`
 
 Årsaker til føring av bygningsstatus.
@@ -445,6 +528,48 @@ medallion: gold
 # `code_formalseksjonkode_v1`
 
 Lovlige formål for seksjoner, blant annet boligseksjon, næringsseksjon og samleseksjon.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_forretningsklassekode_v1`
+
+Kodeliste for forretningsklasser i Matrikkelen.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+| `lovlige_forretningstype_ids` | array<bigint> |  |
+| `utgatte_forretningstype_ids` | array<bigint> |  |
+| `mulige_arsaker_til_feilretting_ids` | array<bigint> |  |
+| `mulige_forretningsklasse_ids_for_grunnlag` | array<bigint> |  |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_forretningstypekode_v1`
+
+Grunnlaget for en endring av matrikkelinformasjon. Merknad: Hvis et punkt er oppdatert får hele grensa eller teigen punktets forretningstype (grensa/teigen er berørt av forretningen).
 
 ## Kolonner
 
@@ -700,6 +825,25 @@ Fyringssystem som utgjør hovedoppvarmingen i et bygg.
 medallion: gold
 ```
 
+# `code_rolleiforretningkode_v1`
+
+matrikkelenhetens rolle i forretning (f.eks om den er avgiver eller mottaker av areal, -eller bare er berørt)
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
 # `code_terrengdetaljkode_v1`
 
 Terrengdetaljen som teiggrensen fulgte ved registrering, for eksempel elv, bygning, veg, vannskille eller steingjerde.
@@ -714,6 +858,25 @@ Terrengdetaljen som teiggrensen fulgte ved registrering, for eksempel elv, bygni
 | `navn_nynorsk` | string | Navn på nynorsk. |
 | `sosi_34` | string | SOSI 3.4-verdi for terrengdetaljen. |
 | `kodeverdi_sosi45` | string | SOSI 4.5-verdi for koden. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+```
+
+# `code_tinglysingsstatuskode_v1`
+
+status i forhold til tinglysing av forretninger
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `kode_id` | bigint | Unik identifikator for kodeobjektet. |
+| `kodeverdi` | string | Kildens kodeverdi. |
+| `navn_bokmaal` | string | Navn på bokmål. |
+| `navn_nynorsk` | string | Navn på nynorsk. |
 
 ## Egenskaper
 
@@ -1217,6 +1380,36 @@ medallion: gold
 scd: type-1
 ```
 
+# `fact_areal_i_forretning_v1`
+
+Komponent brukt i forretning for å koble matrikkelenhet mot forretning og for å kunne angi matrikkelenhetens arealendring og rolle i forretningen. Nåtidsbilde med én rad per ArealIForretning-komponent.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `areal_i_forretning_id` | bigint | Persistent ID for ArealIForretning-komponenten. |
+| `forretning_id` | bigint | ID til foreldreforretningen komponenten ble pakket ut fra. |
+| `forretningstype_kode_id` | bigint | Forretningstypen kopiert fra foreldreforretningen. Slås opp i `code_forretningstypekode_v1`. |
+| `forretningsdokumentdato` | date | Dato da foreldreforretningen ble avholdt. Kan være NULL for eldre data. |
+| `matrikkelforingsdato` | date | Dato da foreldreforretningen ble ført i Matrikkelen. Kan være NULL for konverterte data. |
+| `matrikkelenhet_id` | bigint | ID til matrikkelenheten som får eller avgir areal, eller er knyttet til forretningen på annen måte. |
+| `lopenummer` | int | Lokalt løpenummer som knytter sammen avgiver og mottaker når forretningen har flere av dem. Dette er ikke forretningens globale `lopenummer`. |
+| `rolle_id` | bigint | Matrikkelenhetens rolle i forretningen, for eksempel avgiver, mottaker, berørt eller jordskiftepart. Slås opp i `code_rolleiforretningkode_v1`. |
+| `arealendring` | double | Endring i kartplanareal for matrikkelenheten; positiv verdi er tillegg og negativ verdi er fradrag. |
+| `omnummerert_fra` | struct<metadata:array<string>,<br>kommune_id:bigint,<br>gardsnummer:int,<br>bruksnummer:int,<br>festenummer:int,<br>seksjonsnummer:int> | Matrikkelnummeret enheten hadde før omnummerering. |
+| `omnummerert_til` | struct<metadata:array<string>,<br>kommune_id:bigint,<br>gardsnummer:int,<br>bruksnummer:int,<br>festenummer:int,<br>seksjonsnummer:int> | Matrikkelnummeret enheten fikk etter omnummerering. |
+| `volumendring` | double | Endring i oppgitt volum for berørt anleggsprojeksjonsflate. Feltet ble innført i Matrikkel-API 3.16. |
+| `uuid` | string | Deterministisk type-5-UUID generert fra Matrikkelens navnerom samt objektets klasse og ID. |
+| `oppdateringsdato` | timestamp | Tidspunkt da kildeversjonen ble oppdatert i Matrikkelen. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
+
 # `fact_bygning_statushistorikk_v1`
 
 Bygningsstatushistorikk for gjeldende bygninger. Én rad per bygning og statusregistrering.
@@ -1267,3 +1460,51 @@ medallion: gold
 scd: type-1
 ```
 
+# `fact_forretning_v1`
+
+Forretning dokumenterer ting som har skjedd med Matrikkelenheten opp gjennom tiden. Forretning dokumenterer også ting som har skjedd med nabo-enhet såfremt de har et felles punkt som inngår i forretningen. Nåtidsbilde med én rad per forretning.
+
+## Kolonner
+
+| Kolonne | Datatype | Kommentar |
+| --- | --- | --- |
+| `forretning_id` | bigint | Matrikkelens tekniske objekt-ID for forretningen. Det logiske løpenummeret ligger i `lopenummer`. |
+| `forretningstype_kode_id` | bigint | Juridisk eller historisk grunnlag for en endring av matrikkelinformasjon. Lovlige og utgåtte typer avhenger av forretningsklassen. Hvis et punkt oppdateres får hele grensa eller teigen punktets forretningstype. Slås opp i `code_forretningstypekode_v1`. |
+| `lopenummer` | bigint | Entydig logisk identifikator for forretningen i endringsloggen. Konvertert fra GAB og videreført i Matrikkelen. |
+| `forretningsdokumentdato` | date | Dato da forretningen ble avholdt. Påkrevd for nye forretninger, kan ikke ligge i fremtiden og kan være NULL for eldre data. |
+| `matrikkelforingsdato` | date | Dato for føringen av forretningen i Matrikkelen. Settes automatisk til dagens dato for nye forretninger og kan være NULL for konverterte data. |
+| `kommunal_saksreferanse` | string | Forretningens referanse til kommunalt arkiv. Kalt protokoll-, journal- eller målebrevsnummer i GAB. Kan være maksimalt 30 tegn. |
+| `annen_referanse` | string | Annen referanse enn kommunalt arkiv, blant annet eldre protokoll-, journal- eller målebrevsnummer. For jordskifte og tilkobling til jordskiftesak er feltet påkrevd og inneholder jordskifterettens saksnummer. Kan være maksimalt 30 tegn. |
+| `signatur` | string | Signatur til brukeren som opprettet forretningen. Settes automatisk for Matrikkel-data, men kan mangle i GAB-data. |
+| `forretningsklasse_kode_id` | bigint | Konkret domeneklasse eller brukstilfelle for forretningen. Feltet avgjør hvilke klassespesifikke kolonner som er relevante og slås opp i `code_forretningsklassekode_v1`. Gis ut av Matrikkel-API-et fra klientversjon 3.17. |
+| `uuid` | string | Deterministisk type-5-UUID generert fra Matrikkelens navnerom samt objektets klasse og ID. |
+| `kommunal_saksreferanse_url` | string | Lenke eller nettadresse til forretningens sak i kommunalt arkiv. Feltet ble innført i Matrikkel-API 4.1. |
+| `landmalernummer` | string | Landmålernummer slik det er registrert i autorisert landmålerregister (AAL). Feltet ble innført i Matrikkel-API 4.1. |
+| `landmalernavn` | string | Navn på registrert landmåler. Fra 1. januar 2027 er landmåler betinget påkrevd for relevante forretningstyper med geometriendringer. Feltet ble innført i Matrikkel-API 4.1. |
+| `arsak_til_feilretting_kode_id` | bigint | Årsak til feilretting. Skal være `IkkeOppgitt` for andre forretningstyper og en lovlig konkret årsak ved feilretting. Slås opp i `code_arsaktilfeilrettingkode_v1`. |
+| `tinglysingsstatus_kode_id` | bigint | Status i forhold til tinglysing. Bare forretninger som kan sendes til tinglysing kan ha annen verdi enn `IkkeOppgitt`. Slås opp i `code_tinglysingsstatuskode_v1`. |
+| `tinglysingsstatus_endret_dato` | date | Dato for når forretningens tinglysingsstatus er endret sist. Settes til dagens dato av systemet når tinglysingsstatus endres og hver gang rapporten "Melding til tinglysing" genereres. Kun forretninger som kan sendes til tinglysing får en dato satt. |
+| `melding_til_tinglysings_id` | string | Unik meldings-ID i innsendings-API-et for elektronisk tinglysing. Bare satt ved elektronisk innsending; papirinnsending gir NULL. En ny innsending får ny ID. |
+| `teig_ids` | array<bigint> | ID-er til teiger knyttet til en geometri-forretning. |
+| `teiggrense_ids` | array<bigint> | ID-er til teiggrenser knyttet til en geometri-forretning. |
+| `teiggrensepunkt_ids` | array<bigint> | ID-er til teiggrensepunkter knyttet til en geometri-forretning. |
+| `anleggsprojeksjonsflate_ids` | array<bigint> | ID-er til anleggsprojeksjonsflater knyttet til en geometri-forretning. |
+| `anleggsprojeksjonsgrense_ids` | array<bigint> | ID-er til anleggsprojeksjonsgrenser knyttet til en geometri-forretning. |
+| `anleggsprojeksjonspunkt_ids` | array<bigint> | ID-er til anleggsprojeksjonspunkter knyttet til en geometri-forretning. |
+| `unntak_etter_ml9f` | boolean | Om arealoverføringen omfattes av unntaket i matrikkelloven § 9 første ledd bokstav f: overføring fra uregistrert jordsameie eller fra et område med flere bruksnumre og ukjente grenser. |
+| `forretning_som_grunnlag_id` | bigint | ID til en forretning brukt som grunnlag for blant annet fullføring, feilretting eller reversering av omnummerering. |
+| `eksisterende_matrikkelenhet_id` | bigint | ID til matrikkelenheten som en forretning over eksisterende matrikkelenhet føres over. Kan mangle i data før versjon 2.2 og i konverterte data. |
+| `matrikkelenhet_for_omnummerering_id` | bigint | ID til matrikkelenheten som får nytt matrikkelnummer. Omnummereringen beholder matrikkelenhetens objekt-ID. |
+| `tinglyst_dokument_ident` | struct<embete:int,<br>dokument_ar:int,<br>dokument_nummer:int,<br>dokument_rnummer:int> | Ident til tinglyst dokument for en sammenslåing. Brukes til å finne igjen sammenslåingen ved feilretting eller endring. |
+| `sammensla_reseksjoneringer` | array<struct<metadata:array<string>,<br>sammensla_reseksjonering_id:bigint,<br>seksjon_id:bigint,<br>matrikkelnummer:struct<metadata:array<string>,<br>kommune_id:bigint,<br>gardsnummer:int,<br>bruksnummer:int,<br>festenummer:int,<br>seksjonsnummer:int>,<br>sameiebrok:struct<teller:bigint,<br>nevner:bigint>,<br>formal_seksjon_kode_id:bigint,<br>versjon_id:bigint,<br>oppdateringsdato:timestamp,<br>sluttdato:timestamp>> | Midlertidige reseksjoneringsdata for sammenslåing med seksjonerte, tinglyste matrikkelenheter. Brukes når sammenslåingen fullføres etter svar fra tinglysingen. |
+| `sammensla_ommatrikulering_festegrunner` | array<struct<metadata:array<string>,<br>sammensla_ommatrikulering_festegrunn_id:bigint,<br>festegrunn_id:bigint,<br>matrikkelnummer:struct<metadata:array<string>,<br>kommune_id:bigint,<br>gardsnummer:int,<br>bruksnummer:int,<br>festenummer:int,<br>seksjonsnummer:int>,<br>versjon_id:bigint,<br>oppdateringsdato:timestamp,<br>sluttdato:timestamp>> | Midlertidige data for ommatrikulering av underliggende festegrunner ved sammenslåing. Omfatter også bestående festegrunner som ikke bytter matrikkelnummer. |
+| `forretninger_i_forretning_ids` | array<bigint> | ID-er til forretninger som opprettes, endres eller slettes gjennom en rettings- eller endringsforretning. Relevant for forretningsklasse 45 og 53. |
+| `jordskifte_krevd_id` | bigint | ID til det registrerte kravet om jordskiftesak som en `JordskifteForretning` fører. Jordskifterettens saksreferanse ligger i `annen_referanse`. |
+| `oppdateringsdato` | timestamp | Tidspunkt da kildeversjonen ble oppdatert i Matrikkelen. Brukes som sekvensfelt for Silver-SCD2. |
+
+## Egenskaper
+
+```yaml
+medallion: gold
+scd: type-1
+```
