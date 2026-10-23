@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = [
     "argparse>=1.4.0",
-    "delta-sharing>=1.4.1",
+    "delta-sharing>=1.4.2",
 ]
 
 [build-system]
