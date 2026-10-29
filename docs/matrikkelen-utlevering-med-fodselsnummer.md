@@ -1,6 +1,6 @@
 # Tabelldokumentasjon
 
-_Generert 2026-10-16T08:31:37+00:00_
+_Generert 2026-10-29T12:46:15+00:00_
 
 ## Tabeller
 
@@ -862,6 +862,10 @@ Gjeldende bygninger i Matrikkelen. Én rad per bygning.
 | `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
 | `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
 | `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `antall_boenheter` | int | Sum antall boenheter på bygning (bruksenheter av type bolig). |
+| `bruksareal_til_bolig` | double | Sum bruksareal til bolig på bygning. |
+| `bruksareal_til_annet` | double | Sum bruksareal til annet enn bolig på bygning. |
+| `bruksareal_totalt` | double | Sum totalt bruksareal på bygning. |
 | `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
 | `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
 | `bygningstype_kode_id` | bigint | Bygningstypen sier hva bygningen er brukt til. |
@@ -906,6 +910,10 @@ Gjeldende bygningsendringer i Matrikkelen. Én rad per bygningsendring.
 | `vannforsynings_kode_id` | bigint | Kode for type vannforsyning. Privat vannverk defineres som nett som forsyner mer enn 100 personer eller 20 husstander. |
 | `naringsgruppe_kode_id` | bigint | Hvilken næringsgruppe som opptar størst andel av samlet areal i bygget. Unntak: Dersom bolig er kombinert med annen næring skal bygget ikke gis næringsgruppe bolig. |
 | `opprinnelses_kode_id` | bigint | Angir hvordan bygget opprinnelig ble registrert. |
+| `antall_boenheter` | int | Sum antall boenheter på bygning (bruksenheter av type bolig). |
+| `bruksareal_til_bolig` | double | Sum bruksareal til bolig på bygning. |
+| `bruksareal_til_annet` | double | Sum bruksareal til annet enn bolig på bygning. |
+| `bruksareal_totalt` | double | Sum totalt bruksareal på bygning. |
 | `uuid` | string | Type-5 uuid generert med SHA-1 fra navnerom og matrikkel-ID-verdi for objektet den hører til |
 | `oppdateringsdato` | timestamp | Viser når boblen sist ble endret. Feltet er alltid satt dersom boblen har det. |
 | `hovedbygg_id` | bigint | Bygningsendringens tilhørende bygning, kan ikke være null. |
