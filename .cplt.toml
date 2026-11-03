@@ -1,0 +1,21 @@
+# cplt sandbox policy for kv-deltashare-examples.
+# Required by kartverket/copilot (content/sikkerhet/cplt.md).
+# cplt reads this file from git HEAD: commit it, then run `cplt trust accept --all`.
+# [deny] applies at once; [propose] only after it is committed and accepted.
+
+[deny]
+# Local secret files. Paths are exact, relative to the repo root: cplt does not
+# expand globs. cplt's defaults already block any .env / .env.* file, but only a
+# key file named exactly .pem, not private-key.pem.
+paths = [
+    ".env",
+    # Maskinporten key pair for the examples.
+    "keys",
+    # Delta Sharing profile with credentials. The *.example.share files stay readable.
+    "config/oauth_config.share",
+]
+
+[propose]
+# Block pushes and destructive git/gh commands. Required.
+gh_guard = true
+git_push_prevention = true
