@@ -13,9 +13,9 @@ Beskriv mulige konsekvenser, migreringer, breaking changes, ytelse, sikkerhet el
 
 ## 📜 Dokumentasjon oppdatert
 
-- [ ] Confluence
-- [ ] Kodenær dokumentasjon: docstrings, README, Mermaid, DBML, osv.
-- [ ] Miro-skisser
+- [ ] Kodenær dokumentasjon: docstrings, README
+- [ ] Oppdatert tabelldokumentasjon
+- [ ] Oppdatert dokumentasjon på `kv-deltashare-examples`
 - [ ] Annet: …
 
 ## 🤖 KI bruk
