@@ -13,7 +13,12 @@ Beskriv mulige konsekvenser, migreringer, breaking changes, ytelse, sikkerhet el
 
 ## 📜 Dokumentasjon oppdatert
 
-- [ ] Confluence 
+- [ ] Confluence
 - [ ] Kodenær dokumentasjon: docstrings, README, Mermaid, DBML, osv.
 - [ ] Miro-skisser
 - [ ] Annet: …
+
+## 🤖 KI bruk
+
+- [ ] Til kodegenerering
+- [ ] Til dokumentasjon
