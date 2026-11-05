@@ -348,22 +348,23 @@ wheels = [
 
 [[package]]
 name = "delta-kernel-rust-sharing-wrapper"
-version = "0.3.3"
+version = "0.3.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cf/ab/17290eb079b23b0f80da3ed6d7e8ac406768d3dab74abaa4275a4918c9c4/delta_kernel_rust_sharing_wrapper-0.3.3.tar.gz", hash = "sha256:1ce82f9d18c66faaacca7f7a9a77b5210255a4d5bc6d61b8410f6bd5a9f37623", size = 23525, upload-time = "2026-08-10T20:10:56.149Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/25/75373f92d71de4eb9d906ad26125d9b7d9c98106491a8ca31466cef41c90/delta_kernel_rust_sharing_wrapper-0.3.4.tar.gz", hash = "sha256:6e13bdf8f8c311821637eef9dc9b79dae5e0208fea27b53cd959b01b09b000b4", size = 23547, upload-time = "2026-10-28T01:47:14.179Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e0/23/64946742c495c68b2a62a42f2c2b9a1475284d11a554bed81566319ccb6b/delta_kernel_rust_sharing_wrapper-0.3.3-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:059b5d38832995d32eb49945e80492fde84a9146f7e49e57b753346d85d642f3", size = 11576970, upload-time = "2026-08-12T00:13:41.818Z" },
-    { url = "https://files.pythonhosted.org/packages/95/44/4e66924166ea9f4391238ce46d87356812d6ee078bddcf1be9b308e0f1a5/delta_kernel_rust_sharing_wrapper-0.3.3-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:dec6d04d01e349b25306fa635739e89f5e2db988f9be7eaa6c1eea49faa4c3f0", size = 11000056, upload-time = "2026-08-12T00:13:47.221Z" },
-    { url = "https://files.pythonhosted.org/packages/4b/b8/4d1bebdc80944175b6373e8f3cfb0a5db774feff19ef5c008236723c66f6/delta_kernel_rust_sharing_wrapper-0.3.3-cp310-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:de37ad51234fec921da62b6e0279e1e2067287891c98aef2cd750b53a87989c0", size = 12830338, upload-time = "2026-08-10T20:10:51.992Z" },
-    { url = "https://files.pythonhosted.org/packages/7e/f4/1d34ed1949d86f913725d0f5e73d511a6dbb11d408f83575b695b1801d15/delta_kernel_rust_sharing_wrapper-0.3.3-cp310-abi3-win_amd64.whl", hash = "sha256:a411853f11a9aaa8668ee5ac6facafac21021ed49c960ba8ab2cebfafddd758c", size = 10413490, upload-time = "2026-08-10T20:10:54.386Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/2b/589a6827d19464d72750b37584a10af876597efce89fd2630245f9e77068/delta_kernel_rust_sharing_wrapper-0.3.4-cp310-abi3-macosx_10_12_x86_64.whl", hash = "sha256:a00aa370aec891971966fcbc811242304786580dc81c7ca8b893c80ec7095d50", size = 11207696, upload-time = "2026-10-28T01:32:45.335Z" },
+    { url = "https://files.pythonhosted.org/packages/6e/c3/a5921366273cf064669f7d0708ae41183d2c2858a4183a798bac277cd028/delta_kernel_rust_sharing_wrapper-0.3.4-cp310-abi3-macosx_11_0_arm64.whl", hash = "sha256:edf67ab8fe37407894dfb0bad5ba49dad4ed3350fe61238786fed2e3c438906c", size = 10642262, upload-time = "2026-10-28T01:32:50.954Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/e9/82bc2968f2c5e96bb17d5226d2a6e979dbb82c5d3d0898a7e49fc75e23f0/delta_kernel_rust_sharing_wrapper-0.3.4-cp310-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:b458d5a66d29588a983c3ea4fc4bd731d2a9080b70a8f3985e7fa48dd7d38421", size = 12846912, upload-time = "2026-10-28T01:47:10.273Z" },
+    { url = "https://files.pythonhosted.org/packages/27/de/8db736795a7ada3d67b8f78aeb04a37368d4f19819596995ba5ad2438439/delta_kernel_rust_sharing_wrapper-0.3.4-cp310-abi3-win_amd64.whl", hash = "sha256:79b9a81e8b774e6b6b10b4d2508dca6bf9950f8b4761f9eb1079a724c5a12c16", size = 10381592, upload-time = "2026-10-28T01:47:12.454Z" },
 ]
 
 [[package]]
 name = "delta-sharing"
-version = "1.4.2"
+version = "1.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
+    { name = "certifi" },
     { name = "delta-kernel-rust-sharing-wrapper" },
     { name = "fsspec" },
     { name = "jwcrypto" },
@@ -372,9 +373,9 @@ dependencies = [
     { name = "requests" },
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/c2/4a8cf337118dcdcce2a5398ec8648681d80f067c7c0d59512d9ded2cb5fa/delta_sharing-1.4.2.tar.gz", hash = "sha256:4e8d248a547d997ed5c18a92d84ffd361e4dbad47a786fbc0333729a785b8abe", size = 27757, upload-time = "2026-08-10T20:13:28.212Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/92/8d996a52ff8eecf008c77ae1ec6cc0b189465dbb1e5a6cec6f65f52e1708/delta_sharing-1.4.3.tar.gz", hash = "sha256:ea1629494dd9e48317ce57c2f6390a43b7a3a19b8ee13abb917fe687d33a545b", size = 27911, upload-time = "2026-10-29T03:43:29.132Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/eb/f1/c32fc9c99bfcfdcdc165eaf99543c3a923db1de5bc4171f669fc39b3ab96/delta_sharing-1.4.2-py3-none-any.whl", hash = "sha256:6797d71d9f59236db6a38e3cb64e31f695a1a2f8059aceb9929c147155b4827a", size = 31352, upload-time = "2026-08-10T20:13:27.031Z" },
+    { url = "https://files.pythonhosted.org/packages/81/9a/9659c1cb7e544387039232556a1d4852c07be8f9a1a70f5afbc92df58350/delta_sharing-1.4.3-py3-none-any.whl", hash = "sha256:769cc69f0b57ef6cd83d08b9c028df30dcff3e6251bd8583da11b94d1dbda0ed", size = 31362, upload-time = "2026-10-29T03:43:28.127Z" },
 ]
 
 [[package]]
@@ -389,7 +390,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "argparse", specifier = ">=1.4.0" },
-    { name = "delta-sharing", specifier = ">=1.4.2" },
+    { name = "delta-sharing", specifier = ">=1.4.3" },
 ]
 
 [[package]]
