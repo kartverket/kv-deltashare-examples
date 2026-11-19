@@ -360,7 +360,7 @@ wheels = [
 
 [[package]]
 name = "delta-sharing"
-version = "1.4.3"
+version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -373,9 +373,9 @@ dependencies = [
     { name = "requests" },
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cf/92/8d996a52ff8eecf008c77ae1ec6cc0b189465dbb1e5a6cec6f65f52e1708/delta_sharing-1.4.3.tar.gz", hash = "sha256:ea1629494dd9e48317ce57c2f6390a43b7a3a19b8ee13abb917fe687d33a545b", size = 27911, upload-time = "2026-10-29T03:43:29.132Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fd/2d/5931a8ad3584479fe1e9990558ee2bff676820cd8229834c9158ff6f65b1/delta_sharing-1.5.0.tar.gz", hash = "sha256:3fe43051726a3e2453be55ba277e93e1a22ce492261d3146ca6acddd53e9a0a7", size = 33058, upload-time = "2026-11-12T01:40:41.84Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/81/9a/9659c1cb7e544387039232556a1d4852c07be8f9a1a70f5afbc92df58350/delta_sharing-1.4.3-py3-none-any.whl", hash = "sha256:769cc69f0b57ef6cd83d08b9c028df30dcff3e6251bd8583da11b94d1dbda0ed", size = 31362, upload-time = "2026-10-29T03:43:28.127Z" },
+    { url = "https://files.pythonhosted.org/packages/de/58/4e409c68c239a1becac6889fbb9973cbca5c6798169bbb443a1617e9d026/delta_sharing-1.5.0-py3-none-any.whl", hash = "sha256:704234713e7dda464f023a32d93980fb25f90d14fe0694bb2b2fb8f77f07df3d", size = 36071, upload-time = "2026-11-12T01:40:40.736Z" },
 ]
 
 [[package]]
@@ -390,7 +390,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "argparse", specifier = ">=1.4.0" },
-    { name = "delta-sharing", specifier = ">=1.4.3" },
+    { name = "delta-sharing", specifier = ">=1.5.0" },
 ]
 
 [[package]]
